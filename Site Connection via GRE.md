@@ -68,9 +68,7 @@ conf t
   deny ip 10.~~.0.0 0.0.255.255 10.91.0.0 0.0.255.255
   deny ip 10.~~.0.0 0.0.255.255 10.92.0.0 0.0.255.255
   permit ip any any
-  exit
- ip nat inside source list NAT-TRAFFIC int g0/0/1 overload
- end
+  end
 ~~~
 
 <br>
@@ -79,7 +77,8 @@ conf t
 ~~~
 !@EDGE
 conf t
- ip nat inside source list 1 int g0/0/1 overload
+ ip nat inside source list NAT-TRAFFIC int g0/0/1 overload
+ end
 ~~~
 
 <br>
