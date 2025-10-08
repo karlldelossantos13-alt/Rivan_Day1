@@ -473,6 +473,7 @@ end
 
 ************** NAT Configuration **************
 
+!Create an ACL to match traffic to be NATTED
 !@edge
 conf t
  ip access-list extended NAT-POLICY
@@ -495,16 +496,19 @@ conf t
   deny ip 10.#$34T#.0.0 0.0.255.255 10.91.0.0 0.0.255.255
   deny ip 10.#$34T#.0.0 0.0.255.255 10.92.0.0 0.0.255.255
   permit ip any any
-  exit
- !
+  end
+
+!@Define INSIDE and OUTSIDE
+!@edge
+conf t
  int g0/0/0 
   ip nat inside
   exit
  int g0/0/1
   ip nat outside
-  exit
- ip nat inside source list 1 int g0/0/1 overload
- end
+  end
+
+!@
 
 
 --- INTERNET ---
@@ -640,6 +644,7 @@ conf t
 conf t
  class-map voip
   match ip dscp  ?
+
 
 
 
