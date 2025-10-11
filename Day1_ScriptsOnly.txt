@@ -355,6 +355,14 @@ conf t
   destination-pattern 82..
   session target ipv4:10.82.100.8
   codec g711ULAW
+ dial-peer voice 91 Voip
+  destination-pattern 91..
+  session target ipv4:10.91.100.8
+  codec g711ULAW
+ dial-peer voice 92 Voip
+  destination-pattern 92..
+  session target ipv4:10.92.100.8
+  codec g711ULAW
  end
 
 !@default route CUCM
@@ -421,6 +429,8 @@ conf t
  ip route 10.91.0.0 255.255.0.0 200.0.0.91 254
  ip route 10.92.0.0 255.255.0.0 200.0.0.92 254
  ip route 10.#$34T#.0.0 255.255.0.0 10.#$34T#.#$34T#.4 253
+ !
+ no ip route 10.#$34T#.0.0 255.255.0.0 200.0.0.#$34T# 254
  end
 
 !@ospf routing edge
@@ -468,65 +478,6 @@ router ospf 1
 router-id 10.#$34T#.100.8
 network 10.#$34T#.100.0 0.0.0.255 area 0
 end
-
-
-
-************** NAT Configuration **************
-
-!Create an ACL to match traffic to be NATTED
-!@edge
-conf t
- ip access-list extended NAT-POLICY
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.11.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.12.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.21.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.22.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.31.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.32.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.41.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.42.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.51.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.52.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.61.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.62.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.71.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.72.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.81.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.82.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.91.0.0 0.0.255.255
-  deny ip 10.#$34T#.0.0 0.0.255.255 10.92.0.0 0.0.255.255
-  permit ip any any
-  end
-
-!@Define INSIDE and OUTSIDE
-!@edge
-conf t
- int g0/0/0 
-  ip nat inside
-  exit
- int g0/0/1
-  ip nat outside
-  end
-
-!@
-
-
---- INTERNET ---
-!@edge
-ping 200.0.0.1
-conf t
- ip route 0.0.0.0 0.0.0.0 200.0.0.1
- end
-
---- MODIFY ROUTING INSIDE ---
-!@EDGE
-conf t
- no router ospf 1
-router ospf 1
- router-id #$34T#.0.0.1
- network 10.#$34T#.#$34T#.0 0.0.0.255 area 0
- default-information originate always
- end
 
 ************** Trunking and Etherchannel **************
 
@@ -645,9 +596,64 @@ conf t
  class-map voip
   match ip dscp  ?
 
+************** NAT with NAT0 **************
+
+!@edge
+conf t
+ int g0/0/0 
+  ip nat inside
+  exit
+ int g0/0/1
+  ip nat outside
+  end
+
+!@edge
+conf t
+ ip access-list extended NAT-POLICY
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.11.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.12.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.21.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.22.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.31.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.32.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.41.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.42.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.51.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.52.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.61.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.62.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.71.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.72.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.81.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.82.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.91.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.92.0.0 0.0.255.255
+  no deny ip 10.#$34T#.0.0 0.0.255.255 10.#$34T#.0.0 0.0.255.255
+  permit ip any any
+  end
+
+!@edge
+conf t
+ ip nat inside source list NAT-POLICY int g0/0/1 overload
+ ip route 0.0.0.0 0.0.0.0 200.0.0.1
+ end
+
+!@edge
+conf t
+ no router ospf 1
+ router ospf 1
+  router-id #$34T#.0.0.1
+  network 10.#$34T#.#$34T#.0 0.0.0.255 area 0
+  default-information originate always
+  end
+
+!@edge
+conf t
+ ip name-server 10.#$34T#.1.10
+ end
 
 
-
+************** mGRE Tunnel **************
 
 
 
