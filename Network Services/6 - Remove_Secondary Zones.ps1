@@ -40,15 +40,12 @@ foreach ($record in $ClassMonitors) {
 
 
 # ----------------------------
-#  DNS SECONDARY ZONE
+#  REMOVE DNS SECONDARY ZONE
 # ----------------------------
 
 # SECONDARY
 foreach ($Record in $ClassMonitors) {
     if ($Record -ne $Monitor) {
-        Add-DnsServerSecondaryZone -Name "$SLD$Record.$TLD" -ZoneFile "$SLD$Record.$TLD.dns" -MasterServers "10.$Record.1.$ServerIP"
+        Remove-DnsServerZone -Name "$SLD$Record.$TLD" -Force
     }
 }
-
-# Modify Zone Transfer
-    Set-DnsServerPrimaryZone -name $ZoneName -SecureSecondaries TransferAnyServer -Notify NotifyServers -NotifyServers $NotifyList
