@@ -1,0 +1,1091 @@
+CCNP Day1
+
+On Premise vs Cloud
+"Configure Day1 devices alongside RSTHayup"
+
+Layer 1 - Establish physical connectivity.
+
+Network Design - Topology
+- Bus
+- Star
+
+Cabling
+- UTP
+- Fiber Optic
+
+PoE Standards
+Provisioning
+
+
+Layer 2 - Switches
+
+CoreTAAS & CoreBABA
+RSTHayup - P1, P2, D1, D2, A1, A2, R4
+
+Frame Forwarding
+Structure of an Ethernet Frame
+- Preamble
+- SFD
+- Destination MAC
+- Source MAC
+- Type
+- FCS
+
+VLAN Management
+- VTP
+
+SVI
+- L3 Connectivity
+
+LoadBalance
+- Etherchannel
+- Stackwise
+- VSS
+
+DHCP
+
+MAC Learning & Reservation
+- IP Reservation
+- ARP
+
+Vulnerabilities (_D3Pentest)
+- Port Security 
+- DHCP Snooping
+- Dynamic Arp Inspection
+
+Loop Avoidance
+- STP
+- STP Features
+
+
+CONFIGURATION - CoreBABA & CoreTAAS
+
+!@CoreTAAS
+conf t
+ hostname CoreTAAS-#$34T#
+ enable secret pass
+ service password-encryption
+ no ip domain lookup
+ no logging cons
+ line cons 0 
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int vlan 1
+  ip add 10.#$34T#.1.2 255.255.255.0
+  no shut
+  end
+
+!@CoreBABA
+conf t
+ hostname CoreBABA-#$34T#
+ enable secret pass
+ service password-encryption
+ no ip domain lookup
+ no logging cons
+ line cons 0 
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int vlan 1
+  ip add 10.#$34T#.1.4 255.255.255.0
+  no shut
+  end
+  
+---
+
+!@cmd
+ping 10.#$34T#.1.2
+ping 10.#$34T#.1.4
+
+nmap -v 10.#$34T#.1.2
+nmap -v 10.#$34T#.1.4
+
+Telnet
+- 10.#$34T#.1.2
+- 10.#$34T#.1.4
+
+---
+
+!@CoreTAAS
+conf t
+ int range fa0/10-12
+  channel-group 1 mode active
+  port-channel load-balance src-mac
+  end
+
+!@CoreBABA
+conf t
+ int range fa0/10-12
+  channel-group 1 mode passive
+  port-channel load-balance src-mac
+  end
+
+What does port-channel load-balance do?
+src-mac
+src-dst-ip
+extended
+
+!@CoreTAAS & CoreBABA
+conf t
+ int po1
+  lacp max-bundle 8
+  lacp min-links 3
+  end
+
+Ethernet Frame LACP contents
+
+---
+
+Trunk Links (802.1q)
+!@CoreTAAS & CoreBABA
+conf t
+ int po1
+  switchport trunk encaps dot1q
+  switchport mode trunk
+  switchport trunk allowed vlan all
+  switchport trunk native vlan 1
+  switchport trunk prune vlan 69
+  end
+
+Ethernet Frame 802.1q Tag contents
+
+###################
+RSTHAYUP
+
+---
+
+VLAN Trunking Protocol
+!@CoreTAAS & CoreBABA
+conf t
+ vtp domain ccnp
+ vtp version 2
+ vtp password C1sc0123
+ end
+
+!@CoreBABA
+ vtp mode client
+ end
+
+!@CoreTAAS
+conf t
+ vtp mode server
+ !
+ vlan 10
+  name WIFIVLAN
+  exit
+ vlan 50
+  name CCTVVLAN
+  exit
+ vlan 100
+  name VOICEVLAN
+  end
+
+!@CoreTAAS & CoreBABA
+show flash:
+
+Where are VLAN informnation stored? 
+vlan.dat
+
+
+###################
+RSTHAYUP
+
+---
+
+Frame Forwarding Process
+
+!@Cisco
+show arp
+
+!@Windows & Linux
+arp -a
+
+
+On D3Pentest, attempt CDP Flooding attack or VTP attack.
+Prevent Vulnerabilities by configuring STP
+
+Spanning Tree Protocol
+PVST+ (802.1D)
+
+STP Values:
+32768	24576  28672
+
+!@CoreTAAS
+conf t
+ spanning-tree vlan 1-100 root primary
+ end
+
+!@CoreBABA
+conf t
+ spanning-tree vlan 1-100 root secondary
+ end
+
+
+BLK - LIS - LRN - FWD
+      15s   15s       = 30s
+
+
+###################
+RSTHAYUP
+
+---
+
+Switch Virtual Interface
+
+!@CoreTAAS
+conf t
+ int vlan 10
+  description WIFIVLAN
+  ip add 10.#$34T#.10.2 255.255.255.0
+  no shut
+  exit
+ int vlan 50
+  description CCTVVLAN
+  ip add 10.#$34T#.50.2 255.255.255.0
+  no shut
+  exit
+ int vlan 100
+  description VOICEVLAN
+  ip add 10.#$34T#.100.2 255.255.255.0
+  no shut
+  end
+
+!@CoreBABA
+conf t
+ int vlan 10
+  description WIFIVLAN
+  ip add 10.#$34T#.10.4 255.255.255.0
+  no shut
+  exit
+ int vlan 50
+  description CCTVVLAN
+  ip add 10.#$34T#.50.4 255.255.255.0
+  no shut
+  exit
+ int vlan 100
+  description VOICEVLAN
+  ip add 10.#$34T#.100.4 255.255.255.0
+  no shut
+  end
+
+--- 
+
+Layer 3 - IP Forwarding
+
+Wireshark - Capture DHCP data
+
+DHCP & Network Traffic Types
+- Discover - Broadcast
+- Offer - Unicast
+- Request - Broadcast
+- Acknowledge - Unicast
+
+!@CoreTAAS
+conf t
+ ip dhcp excluded-address 10.#$34T#.1.1 10.#$34T#.1.100
+ ip dhcp excluded-address 10.#$34T#.10.1 10.#$34T#.10.100
+ ip dhcp excluded-address 10.#$34T#.50.1 10.#$34T#.50.100
+ ip dhcp excluded-address 10.#$34T#.100.1 10.#$34T#.100.100
+ ip dhcp pool POOLDATA
+  network 10.#$34T#.1.0 255.255.255.0
+  default-router 10.#$34T#.1.4
+  domain-name MGMTDATA.COM
+  dns-server 10.#$34T#.1.10
+ ip dhcp pool POOLWIFI
+  network 10.#$34T#.10.0 255.255.255.0
+  default-router 10.#$34T#.10.4
+  domain-name WIFIDATA.COM
+  dns-server 10.#$34T#.1.10
+  option 43 ip 10.#$34T#.10.#$34T#
+ ip dhcp pool POOLCCTV
+  network 10.#$34T#.50.0 255.255.255.0
+  default-router 10.#$34T#.50.4
+  domain-name CCTVDATA.COM
+  dns-server 10.#$34T#.1.10
+ ip dhcp pool POOLVOICE
+  network 10.#$34T#.100.0 255.255.255.0
+  default-router 10.#$34T#.100.4
+  domain-name VOICEDATA.COM
+  dns-server 10.#$34T#.1.10
+  option 150 ip 10.#$34T#.100.8
+  end
+
+
+DHCP Options
+- Option 1
+- Option 2
+- Option 3
+
+
+IP Reservation
+
+!@CoreTAAS
+conf t
+ ip routing
+ ip dhcp pool CAMERA6
+  host 10.#$34T#.50.6 255.255.255.0
+  client-identifier #camera6macadd#
+ ip dhcp pool CAMERA8
+  host 10.#$34T#.50.8 255.255.255.0
+  client-identifier #camera8macadd#
+ end
+
+--- 
+
+Did devices get IP from the correct VLAN?
+
+!@CoreBABA
+conf t
+ int range fa0/2,fa0/4
+  switchport mode access
+  switchport access vlan 10
+  exit
+ int range fa0/6,fa0/8
+  switchport mode access
+  switchport access vlan 50
+  exit
+ int fa0/3
+  switchport mode access
+  switchport access vlan 100
+  exit
+ int range fa0/5,fa0/7
+  switchport mode access
+  switchport access vlan 100
+  switchport voice vlan 100
+  mls qos trust device cisco-phone
+  mls qos trust cos
+  end
+ 
+Quality of Service
+- Markings
+- Queue
+- Tags
+
+!@CoreBABA
+conf t
+ auto qos global compact
+ end
+show auto qos
+
+---
+
+Port Security
+
+!@CoreBABA
+conf t
+ int fa0/6
+  switchport mode access
+  switchport port-security
+  switchport port-security mac-address sticky
+  switchport port-security maximum 1
+  switchport port-security violation shutdown
+  exit
+ int fa0/8
+  switchport mode access
+  switchport port-security
+  switchport port-security mac-address sticky
+  switchport port-security maximum 1
+  switchport port-security violation shutdown
+  end
+
+---
+
+Dynamic ARP Inspection & DHCP Snooping
+
+!@CoreBABA
+conf t
+ ip dhcp snooping
+ ip dhcp snooping vlan 100
+ no ip dhcp snooping information option
+ !
+ int po1
+  ip dhcp snooping trust
+  end
+show ip dhcp snooping binding
+
+
+Attempt D3PENTEST to perform as a Rogue DHCP Server
+
+
+!@CoreBABA
+conf t
+ ip arp inspection vlan 100
+ int range fa0/1-8,fa0/10-12
+  ip arp inspection trust
+  exit
+ ip arp inspection validate src-mac dst-mac ip
+ end
+
+---
+
+Managing Enterprise Communication
+
+!@CUCM
+conf t
+ hostname CUCM-#$34T#
+ enable secret pass
+ service password-encryption
+ no ip domain lookup
+ no logging cons
+ line cons 0 
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int fa0/0
+  ip add 10.#$34T#.100.8 255.255.255.0
+  no shut
+  end
+
+
+Remote Access - Jumpserver
+Can you reach CUCM from the PC?
+
+!@cmd
+ping 10.#$34T#.100.8
+
+Clone CoreBABA session > telnet CUCM
+
+---
+
+Analog Phones vs Digital Phones vs IP Phones
+
+Layer 4 - Ports
+Requirements for IP Phones to work
+7.
+6.
+5.
+4. TFTP Server, SCCP, SIP
+3. IP
+2. MAC
+1. PoE
+
+
+Analog
+
+!@CUCM
+conf t
+ dial-peer voice 1 pots
+  destination-pattern #$34T#00
+  port 0/0/0
+ dial-peer voice 2 pots
+  destination-pattern #$34T#01
+  port 0/0/1
+ dial-peer voice 3 pots
+  destination-pattern #$34T#02
+  port 0/0/2
+ dial-peer voice 4 pots
+  destination-pattern #$34T#03
+  port 0/0/3
+ end
+
+!@CUCM
+conf t
+ voice-port 0/0/0
+  signal loopstart
+  caller-id enable
+  station-id name ANALOG1
+  cptone PH  / US
+ end
+!
+csim start #$34T#00
+ 
+
+Telephony
+
+!@CUCM
+conf t
+ no telephony-service
+ telephony-service
+  no auto assign
+  no auto-reg-ephone
+  max-ephones 5
+  max-dn 20
+  ip source-address 10.#$34T#.100.8 port 2000
+  create cnf-files
+ ephone-dn 1
+  number #$34T#11
+ ephone-dn 2
+  number #$34T#22
+ ephone-dn 3
+  number #$34T#33
+ ephone-dn 4
+  number #$34T#44
+ ephone-dn 5
+  number #$34T#55
+ ephone-dn 6
+  number #$34T#66
+ ephone-dn 7
+  number #$34T#77
+ ephone-dn 8
+  number #$34T#88
+ ephone 1
+  mac-address #ephone1macadd#
+  type 8945
+  button 1:1 2:2 3:3 4:4
+  restart
+ ephone 2
+  mac-address #ephone2macadd#
+  type 8945
+  button 1:5 2:6 3:7 4:8
+  restart
+ end
+
+!@CUCM
+conf t
+ ephone 1
+  video
+  voice service voip
+  h323
+  call start slow
+ ephone 2
+  video
+  voice service voip
+  h323
+  call start slow
+end
+
+!@CUCM
+conf t
+ voice service voip
+ ip address trusted list
+ ipv4 0.0.0.0 0.0.0.0
+ end
+
+!@CUCM
+conf t
+ dial-peer voice 11 Voip
+  destination-pattern 11..
+  session target ipv4:10.11.100.8
+  codec g711ULAW
+ dial-peer voice 12 Voip
+  destination-pattern 12..
+  session target ipv4:10.12.100.8
+  codec g711ULAW
+ dial-peer voice 21 Voip
+  destination-pattern 21..
+  session target ipv4:10.21.100.8
+  codec g711ULAW
+ dial-peer voice 22 Voip
+  destination-pattern 22..
+  session target ipv4:10.22.100.8
+  codec g711ULAW
+ dial-peer voice 31 Voip
+  destination-pattern 31..
+  session target ipv4:10.31.100.8
+  codec g711ULAW
+ dial-peer voice 32 Voip
+  destination-pattern 32..
+  session target ipv4:10.32.100.8
+  codec g711ULAW
+ dial-peer voice 41 Voip
+  destination-pattern 41..
+  session target ipv4:10.41.100.8
+  codec g711ULAW
+ dial-peer voice 42 Voip
+  destination-pattern 42..
+  session target ipv4:10.42.100.8
+  codec g711ULAW
+ dial-peer voice 51 Voip
+  destination-pattern 51..
+  session target ipv4:10.51.100.8
+  codec g711ULAW
+ dial-peer voice 52 Voip
+  destination-pattern 52..
+  session target ipv4:10.52.100.8
+  codec g711ULAW
+ dial-peer voice 61 Voip
+  destination-pattern 61..
+  session target ipv4:10.61.100.8
+  codec g711ULAW
+ dial-peer voice 62 Voip
+  destination-pattern 62..
+  session target ipv4:10.62.100.8
+  codec g711ULAW
+ dial-peer voice 71 Voip
+  destination-pattern 71..
+  session target ipv4:10.71.100.8
+  codec g711ULAW
+ dial-peer voice 72 Voip
+  destination-pattern 72..
+  session target ipv4:10.72.100.8
+  codec g711ULAW
+ dial-peer voice 81 Voip
+  destination-pattern 81..
+  session target ipv4:10.81.100.8
+  codec g711ULAW
+ dial-peer voice 82 Voip
+  destination-pattern 82..
+  session target ipv4:10.82.100.8
+  codec g711ULAW
+ dial-peer voice 91 Voip
+  destination-pattern 91..
+  session target ipv4:10.91.100.8
+  codec g711ULAW
+ dial-peer voice 92 Voip
+  destination-pattern 92..
+  session target ipv4:10.92.100.8
+  codec g711ULAW
+ end
+
+
+Default Floating Static Route
+
+!@CUCM
+conf t
+ ip route 0.0.0.0 0.0.0.0 10.#$34T#.100.4 254
+ end
+
+---
+
+Customer Premises
+ Provider EDGE
+ Customer EDGE
+
+!@EDGE
+conf t
+ hostname EDGE-#$34T#
+ enable secret pass
+ service password-encryption
+ no logging console
+ no ip domain-lookup
+ line cons 0
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int gi 0/0/0
+  no shut
+  ip add 10.#$34T#.#$34T#.1 255.255.255.0
+  desc INSIDE
+ int gi 0/0/1
+  no shut
+  ip add 200.0.0.#$34T# 255.255.255.0
+  desc OUTSIDE
+ int loopback 0
+  ip add #$34T#.0.0.1 255.255.255.255
+  desc VIRTUALIP
+ end
+
+
+Switch vs Routers
+
+!@CoreBABA
+conf t
+ int g0/1
+  no switchport
+  ip add 10.#$34T#.#$34T#.4 255.255.255.0
+  no shut
+  end
+
+---
+
+Static Routing
+
+!@EDGE
+conf t
+ ip route 10.#$34T#.0.0 255.255.0.0 10.#$34T#.#$34T#.4 254
+ end
+
+Telnet EDGE
+
+
+Metro Ethernet
+!@EDGE
+conf t
+ ip routing
+ ip route 10.11.0.0 255.255.0.0 200.0.0.11 254
+ ip route 10.12.0.0 255.255.0.0 200.0.0.12 254
+ ip route 10.21.0.0 255.255.0.0 200.0.0.21 254
+ ip route 10.22.0.0 255.255.0.0 200.0.0.22 254
+ ip route 10.31.0.0 255.255.0.0 200.0.0.31 254
+ ip route 10.32.0.0 255.255.0.0 200.0.0.32 254
+ ip route 10.41.0.0 255.255.0.0 200.0.0.41 254
+ ip route 10.42.0.0 255.255.0.0 200.0.0.42 254
+ ip route 10.51.0.0 255.255.0.0 200.0.0.51 254
+ ip route 10.52.0.0 255.255.0.0 200.0.0.52 254
+ ip route 10.61.0.0 255.255.0.0 200.0.0.61 254
+ ip route 10.62.0.0 255.255.0.0 200.0.0.62 254
+ ip route 10.71.0.0 255.255.0.0 200.0.0.71 254
+ ip route 10.72.0.0 255.255.0.0 200.0.0.72 254
+ ip route 10.81.0.0 255.255.0.0 200.0.0.81 254
+ ip route 10.82.0.0 255.255.0.0 200.0.0.82 254
+ ip route 10.91.0.0 255.255.0.0 200.0.0.91 254
+ ip route 10.92.0.0 255.255.0.0 200.0.0.92 254
+ no ip route 10.#$34T#.0.0 255.255.0.0 200.0.0.#$34T# 254
+ end
+
+--- 
+
+Dynamic Routing
+
+IGP
+- Distance Vector
+1.
+2.
+- Link-State
+1.
+2.
+
+EGP
+- 
+
+
+!@EDGE
+conf t
+ router ospf 1
+  router-id #$34T#.0.0.1
+  network 200.0.0.0 0.0.0.255 area 0
+  network 10.#$34T#.#$34T#.0 0.0.0.255 area #$34T#
+  network #$34T#.0.0.1 0.0.0.0 area #$34T#
+ int gi 0/0/0
+  ip ospf network point-to-point
+  end
+
+!@CoreBABA
+conf t
+ router ospf 1
+  router-id 10.#$34T#.#$34T#.4
+   network 10.#$34T#.0.0 0.0.255.255 area #$34T#
+   end
+
+
+Did EDGE & CoreBABA form a neighborship?
+Did they share routes?
+
+!@CoreBABA
+conf t
+ int gi 0/1
+  ip ospf network point-to-point
+  end
+
+!@CUCM
+conf t
+ router ospf 1
+  router-id 10.#$34T#.100.8
+  network 10.#$34T#.100.0 0.0.0.255 area #$34T#
+  end
+
+
+Call Other Classmates.
+
+---
+
+Interactive Voice Response System
+
+!@CUCM
+config t
+dial-peer voice 69 voip
+ service rivanaa out-bound
+ destination-pattern #$34T#69
+ session target ipv4:10.#$34T#.100.1
+ incoming called-number #$34T#69
+ dtmf-relay h245-alphanumeric
+ codec g711ulaw
+ no vad
+!
+telephony-service
+ moh "flash:/en_bacd_music_on_hold.au"
+!
+application
+ service rivanaa flash:app-b-acd-aa-3.0.0.2.tcl
+  paramspace english index 1        
+  param number-of-hunt-grps 2
+  param dial-by-extension-option 8
+  param handoff-string rivanaa
+  param welcome-prompt flash:en_bacd_welcome.au
+  paramspace english language en
+  param call-retry-timer 15
+  param service-name rivanqueue
+  paramspace english location flash:
+  param second-greeting-time 60
+  param max-time-vm-retry 2
+  param voice-mail 1234
+  param max-time-call-retry 700
+  param aa-pilot #$34T#69
+ service rivanqueue flash:app-b-acd-3.0.0.2.tcl
+  param queue-len 15
+  param aa-hunt1 #$34T#00
+  param aa-hunt2 #$34T#77
+  param aa-hunt3 #$34T#01
+  param aa-hunt4 #$34T#33
+  param queue-manager-debugs 1
+  param number-of-hunt-grps 4
+  end
+  
+---
+
+Wireless Connectivity
+
+Configure AUT-AP using python
+
+---
+
+Session Initiation Protocol
+
+!@CUCM
+conf t
+ voice service voip
+  allow-connections h323 to sip
+          
+  allow-connections sip to h323
+  allow-connections sip to sip
+  supplementary-service h450.12
+ sip
+   bind control source-interface fa0/0
+   bind media source-interface fa0/0
+   registrar server expires max 600 min 60
+ voice register global
+  mode cme
+  source-address 10.#$34T#.100.1 port 5060
+  max-dn 12
+  max-pool 12
+  authenticate register
+  create profile sync syncinfo.xml
+ voice register dn 1
+   number #$34T#23
+   allow watch
+   name #$34T#23
+ voice register dn 2
+   number #$34T#24
+   allow watch
+   name #$34T#24
+  voice register pool 1
+    id mac #mym0bilemac#
+    number 1 dn 1
+    dtmf-relay sip-notify
+    username #$34T#23 password #$34T#23
+    codec g711ulaw
+  voice register pool 2
+    id mac #othm0bilemac#
+    number 1 dn 2
+    dtmf-relay sip-notify
+    username #$34T#32 password #$34T#32
+    codec g711ulaw
+	end
+
+---
+
+Review
+
+Requirements for IP Phones to work
+7. App
+6. G711 G729
+5. RTP
+4. TFTP Server, SCCP: , SIP:
+3. IP
+2. MAC
+1. PoE
+
+!@cmd
+nmap -v 10.#$43T#.100.8
+
+How to monitor packets from a different network?
+SPAN
+!@CoreBABA
+conf t
+ monitor session 1 source int fa0/3,fa0/5,fa0/7
+ monitor session 1 destination int fa0/1,fa0/9
+ end
+
+Remove SPAN
+!@CoreBABA
+conf t
+ no monitor session 1 source int fa0/3,fa0/5,fa0/7
+ no monitor session 1 destination int fa0/1,fa0/9
+ end
+
+---
+
+Internet Connectivity
+Network Address Translation
+
+1. Define INSIDE & OUTSIDE
+2. Match Traffic
+3. Define Translations
+
+!@EDGE
+conf t
+ int lo0
+  ip nat inside
+  exit
+ int g0/0/0
+  ip nat inside
+  exit
+ int g0/0/1
+  ip nat outside
+  end
+
+!@EDGE
+conf t
+ ip access-list extended NAT-POLICY
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.11.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.12.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.21.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.22.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.31.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.32.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.41.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.42.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.51.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.52.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.61.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.62.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.71.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.72.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.81.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.82.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.91.0.0 0.0.255.255
+  deny ip 10.#$34T#.0.0 0.0.255.255 10.92.0.0 0.0.255.255
+  no deny ip 10.#$34T#.0.0 0.0.255.255 10.#$34T#.0.0 0.0.255.255
+  permit ip any any
+  end
+
+!@EDGE
+conf t
+ ip nat inside source list NAT-POLICY int g0/0/1 overload
+ end
+
+
+Give Internet
+!@EDGE
+conf t
+ ip route 0.0.0.0 0.0.0.0 200.0.0.1
+ end
+
+---
+
+OSPF vs EIGRP
+Does OSPF Routers form neighborships behind NAT devices?
+
+!@edge
+conf t
+ no router ospf 1
+ router ospf 1
+  router-id #$34T#.0.0.1
+  network 10.#$34T#.#$34T#.0 0.0.0.255 area #$34T#
+  default-information originate always
+  end
+
+!@edge
+conf t
+ ip name-server 10.#$34T#.1.10
+ ip domain lookup
+ end
+
+---
+
+Leased Line vs VPN
+Can you still call your other classmates?
+
+Configure VPN (mGRE)
+
+!@EDGE
+conf t
+ int tun1
+  ip add 172.16.1.#$34T# 255.255.255.0
+  tunnel source g0/0/1
+  tunnel mode gre multipoint
+  no shut
+  tun key 123
+  ip nhrp authentication C1sc0123
+  ip nhrp map multicast dynamic
+  ip nhrp network-id 1337
+  ip nhrp map 172.16.1.11 200.0.0.11
+  ip nhrp map 172.16.1.12 200.0.0.12
+  ip nhrp map 172.16.1.21 200.0.0.21
+  ip nhrp map 172.16.1.22 200.0.0.22
+  ip nhrp map 172.16.1.31 200.0.0.31
+  ip nhrp map 172.16.1.32 200.0.0.32
+  ip nhrp map 172.16.1.41 200.0.0.41
+  ip nhrp map 172.16.1.42 200.0.0.42
+  ip nhrp map 172.16.1.51 200.0.0.51
+  ip nhrp map 172.16.1.52 200.0.0.52
+  ip nhrp map 172.16.1.61 200.0.0.61
+  ip nhrp map 172.16.1.62 200.0.0.62
+  ip nhrp map 172.16.1.71 200.0.0.71
+  ip nhrp map 172.16.1.72 200.0.0.72
+  ip nhrp map 172.16.1.81 200.0.0.81
+  ip nhrp map 172.16.1.82 200.0.0.82
+  ip nhrp map 172.16.1.91 200.0.0.91
+  ip nhrp map 172.16.1.92 200.0.0.92
+  no ip nhrp map 172.16.1.#$34T# 200.0.0.#$34T#
+  end
+
+---
+
+Route via Tunnel
+
+Static
+
+!@EDGE
+conf t
+ ip route 10.11.0.0 255.255.0.0 172.16.1.11 252
+ ip route 10.12.0.0 255.255.0.0 172.16.1.12 252
+ ip route 10.21.0.0 255.255.0.0 172.16.1.21 252
+ ip route 10.22.0.0 255.255.0.0 172.16.1.22 252
+ ip route 10.31.0.0 255.255.0.0 172.16.1.31 252
+ ip route 10.32.0.0 255.255.0.0 172.16.1.32 252
+ ip route 10.41.0.0 255.255.0.0 172.16.1.41 252
+ ip route 10.42.0.0 255.255.0.0 172.16.1.42 252
+ ip route 10.51.0.0 255.255.0.0 172.16.1.51 252
+ ip route 10.52.0.0 255.255.0.0 172.16.1.52 252
+ ip route 10.61.0.0 255.255.0.0 172.16.1.61 252
+ ip route 10.62.0.0 255.255.0.0 172.16.1.62 252
+ ip route 10.71.0.0 255.255.0.0 172.16.1.71 252
+ ip route 10.72.0.0 255.255.0.0 172.16.1.72 252
+ ip route 10.81.0.0 255.255.0.0 172.16.1.81 252
+ ip route 10.82.0.0 255.255.0.0 172.16.1.82 252
+ ip route 10.91.0.0 255.255.0.0 172.16.1.91 252
+ ip route 10.92.0.0 255.255.0.0 172.16.1.92 252
+ !
+ no ip route 10.#$34T#.0.0 255.255.0.0 172.16.1.#$34T# 252
+ end
+
+
+Dynamic (EIGRP)
+
+!@EDGE
+conf t
+ router eigrp 100
+  no auto-summary
+  router-id 200.0.0.#$34T#
+  network 200.0.0.0 0.0.0.255
+  end
+
+!@EDGE
+conf t
+ int tun1
+  bandwidth 10000
+  ip mtu 1400
+  no ip split-horizon eigrp 1
+  ip tcp adjust-mss 1360
+  end
+
+Redistribute EIGRP & OSPF
+
+!@EDGE
+conf t
+ router ospf 1
+  redistribute eigrp 100 subnets
+  exit
+ router eigrp 100
+  redistribute ospf 1 metric 10000 100 255 1 1500
+  end
+
+---
