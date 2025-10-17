@@ -1909,6 +1909,13 @@ copy run start
 &nbsp;
 
 ## 🔧 Configure EDGE
+Jobs of a router:
+1. Site Connectivity
+2. Routing Policies
+3. Proxy
+4. Remote Access
+5. QoS
+
 ### 🏨 Establish connectivity to your enterprise.
 *How do you gain access to the internet?*
 
