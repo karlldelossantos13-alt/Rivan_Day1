@@ -1,10 +1,14 @@
-CCNP Day1
+
+<!-- Your Monitor Number == #$34T# -->
+
+# CCNP Day1
 
 On Premise vs Cloud
 "Configure Day1 devices alongside RSTHayup"
 
-Layer 1 - Establish physical connectivity.
+---
 
+Layer 1 - Establish physical connectivity.
 Network Design - Topology
 - Bus
 - Star
@@ -24,30 +28,29 @@ RSTHayup - P1, P2, D1, D2, A1, A2, R4
 
 Frame Forwarding
 Structure of an Ethernet Frame
-- Preamble
-- SFD
-- Destination MAC
-- Source MAC
-- Type
-- FCS
 
-VLAN Management
-- VTP
+| Layer  | Preamble | SFD | MAC Destination | MAC Source | 802.1Q TAG | Ethertype | Payload | FCS | IGP |
+| ---    | ---      | --- | ---             | ---        | ---        | ---       | ---     | --- | --- |
+| Length | 7        | 1   | 6               | 6          | 4          | 2         | 42-1500 | 4   | 12  |
 
-SVI
-- L3 Connectivity
+L2 Technologies
+1. VLANs
+   - VTP
 
-LoadBalance
-- Etherchannel
-- Stackwise
-- VSS
+2. SVI
+   - L3 Connectivity
 
-DHCP
+3. LoadBalance
+   - Etherchannel
+   - Stackwise
+   - VSS
 
-MAC Learning & Reservation
-- IP Reservation
-- ARP
+4. DHCP
+   MAC Learning & Reservation
+   - IP Reservation
+   - ARP
 
+####
 Vulnerabilities (_D3Pentest)
 - Port Security 
 - DHCP Snooping
@@ -56,6 +59,10 @@ Vulnerabilities (_D3Pentest)
 Loop Avoidance
 - STP
 - STP Features
+
+
+
+
 
 
 CONFIGURATION - CoreBABA & CoreTAAS
