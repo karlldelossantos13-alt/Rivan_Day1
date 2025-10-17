@@ -820,9 +820,9 @@ Cisco Unified Call Manager | [Unified Communications and Collaboration.](https:/
 6.
 5.
 4.
-3. IP Address       Did your phone get the correct IP?
-2. MAC Address
-1. Power (PoE)
+3. I__  _____       Did your phone get the correct IP?
+2. M__  _____
+1. P__
 
 <br>
 <br>
@@ -1047,9 +1047,8 @@ config t
 &nbsp;
 ---
 &nbsp;
-
-!@Wireshark   
-### 32768   vs   28672   vs   24576
+  
+### `32768   vs   28672   vs   24576`
 
 <br>
 <br>
@@ -1179,70 +1178,17 @@ conf t
 ---
 &nbsp;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### 💾 Save the configurations
+~~~
+!@CoreTAAS & CoreBABA
+copy run start
+~~~
 
 <br>
 <br>
 
 ---
 &nbsp;
-
-## 🌐 Internet Connectivity
-*When to use UTP and Fibre Optic*
-
-<br>
-
-[IEEE Ethernet Standards](https://www.ccnaacademy.com/2018/09/ieee-ethernet-standards_16.html)
-
-  | Name            | Speed | IEEE  |
-  | ---             |  ---  |  ---  |
-  | Ethernet        |       |       |
-  | FastEthernet    |       |       |
-  | GigEthernet     |       |       |
-  | TenGigEthernet  |       |       |
-
-<br>
-
-  - RJ45 Jack
-  - SFP (Small Form-factor Pluggable)
-
-<br>
-
-  | Copper                                           | Single-mode fiber                    |
-  | ---                                              | ---                                  |
-  | Conductor, Bedding, Sheathing                    | Core, Cladding, Coating              |
-  | Affected by electrical and magnetic interference | Comprised of insulated glass strands |
-
-<br>
-<br>
-
----
-&nbsp;
-
-
-
-
-
 
 ## 🔧 Configure CUCM
 ### 📠 Setup a mini call center
@@ -1269,7 +1215,6 @@ conf t
  end
 ~~~
 
-
 <br>
 <br>
 
@@ -1282,13 +1227,6 @@ conf t
 
 ## ⚙️ 1. Analog Phones (RJ11)
 *Why do companies still use Analog phones?*
-
-<br>
-
-> __ITSM__  
-> Title: 1st Job of a Call Manager/Voice Gateway - Analog Phones  
-> Description: Analog Phone technology is still in use for its ease of use and durability.  
-> Justification: Have a simple and reliable means of communication.
 
 <br>
 
@@ -1316,7 +1254,7 @@ Verify Functionality:
 
 ~~~
 !@CUCM
-show dial-peer voice summary     !SDVS
+show dial-peer voice summary
 csim start #$34T#00
 ~~~
 
@@ -1325,7 +1263,6 @@ csim start #$34T#00
 &nbsp;
 
 Modify the tone of the phone.
-
 ~~~
 !@CUCM
 conf t
@@ -1343,14 +1280,20 @@ conf t
 ## ⚙️ 2. IP Phones (RJ45) - Cisco Skinny Client Control Protocol (SCCP)
 *What kind of phones do enterprise use?*
 
+### Requirements to make IP Phones Operational
+7.
+6.
+5.
+4. T___:  S___:  S__:
+3. IP Address
+2. MAC Address
+1. Power (PoE)
+
+<br>
 <br>
 
-> __ITSM__  
-> Title: 2nd Job of a Call Manager/Voice Gateway - IP Phones  
-> Description: Compared to Analog, IP Phones have more advance features like, video conferencing, Call information logs, etc.  
-> Justification: Important calls can be recorded and provide more information. *Metadata*
-
-<br>
+---
+&nbsp;
 
 ~~~
 !@CUCM
@@ -1442,12 +1385,6 @@ conf t
 &nbsp;
 
 ## ⚙️ 3. Video Calls
-
-> __ITSM__  
-> Title: 3rd Job of a Call Manager/Voice Gateway - Video Calls  
-> Description: More than voice, IP phones support video calls.  
-> Justification: Enable Video call feature.
-
 ~~~
 !@CUCM
 conf t
@@ -1471,12 +1408,6 @@ end
 &nbsp;
 
 ## ⚙️ 4. Allow Incoming & Outgoing Calls
-
-> __ITSM__  
-> Title: 4th Job of a Call Manager/Voice Gateway - Incoming & Outgoing Calls  
-> Description: Configure Calls  
-> Justification: Allow communication within the department
-
 ~~~
 !@CUCM
 conf t
@@ -1575,10 +1506,7 @@ conf t
 ## ⚙️ 5. Interactive Voice Response System (IVRS)
 *How do large call centers handle numerous calls?*
 
-> __ITSM__  
-> Title: 5th Job of a Call Manager/Voice Gateway - IVRS  
-> Description: Manage numerous calls  
-> Justification: Forward calls to specific departments.
+<br>
 
 ~~~
 !@CUCM
@@ -1651,6 +1579,59 @@ Review the jobs of a call manager:
  4. &nbsp;
  5. &nbsp;
   
+<br>
+<br>
+
+---
+&nbsp;
+
+### Requirements to make IP Phones Operational
+7.
+6.
+5.
+4. TFTP:  SCCP:  SIP:
+3. IP Address
+2. MAC Address
+1. Power (PoE)
+
+<br>
+
+## SPAN
+~~~
+!@CoreBABA (Serial)
+conf t
+ monitor session 1 source interface fa0/3,fa0/5,fa0/7
+ monitor session 1 destination interface fa0/1,fa0/9
+ end
+~~~
+
+<br>
+
+__Remove SPAN__
+~~~
+!@CoreBABA (Serial)
+conf t
+ no monitor session 1 source interface fa0/3,fa0/5,fa0/7
+ no monitor session 1 destination interface fa0/1,fa0/9
+ end
+~~~
+
+&nbsp;
+---
+&nbsp;
+
+## ☁️ Remote Access | [JUMPSERVER](https://www.jumpserver.com/)
+### 🎯 Exercies 06: Attempt to establish a telnet session with the call manager
+
+<br>
+
+Is the device pingable?
+
+~~~
+@cmd
+10.#$34T#.100.8
+~~~
+
 <br>
 <br>
 
@@ -1875,23 +1856,65 @@ config t
 ---
 &nbsp;
 
-## ☁️ Remote Access | [JUMPSERVER](https://www.jumpserver.com/)
-### 🎯 Exercies 06: Attempt to establish a telnet session with the call manager
 
-<br>
 
-Is the device pingable?
 
-~~~
-@cmd
-10.#$34T#.100.8
-~~~
+
+
+
+
+
+
+
+
+
+
+
+
 
 <br>
 <br>
 
 ---
 &nbsp;
+
+## 🌐 Internet Connectivity
+*When to use UTP and Fibre Optic*
+
+<br>
+
+[IEEE Ethernet Standards](https://www.ccnaacademy.com/2018/09/ieee-ethernet-standards_16.html)
+
+  | Name            | Speed | IEEE  |
+  | ---             |  ---  |  ---  |
+  | Ethernet        |       |       |
+  | FastEthernet    |       |       |
+  | GigEthernet     |       |       |
+  | TenGigEthernet  |       |       |
+
+<br>
+
+  - RJ45 Jack
+  - SFP (Small Form-factor Pluggable)
+
+<br>
+
+  | Copper                                           | Single-mode fiber                    |
+  | ---                                              | ---                                  |
+  | Conductor, Bedding, Sheathing                    | Core, Cladding, Coating              |
+  | Affected by electrical and magnetic interference | Comprised of insulated glass strands |
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+
+
+
+
 
 ## 🔧 Configure EDGE
 ### 🏨 Establish connectivity to your enterprise.
