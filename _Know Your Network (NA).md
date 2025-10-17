@@ -1649,6 +1649,14 @@ conf t
   destination-pattern 82..
   session target ipv4:10.82.100.8
   codec g711ULAW
+ dial-peer voice 91 Voip
+  destination-pattern 91..
+  session target ipv4:10.91.100.8
+  codec g711ULAW
+ dial-peer voice 92 Voip
+  destination-pattern 92..
+  session target ipv4:10.92.100.8
+  codec g711ULAW
  end
  
 !@IVRS
