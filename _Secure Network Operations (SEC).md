@@ -2151,6 +2151,14 @@ ping 10.#$34T#.#$34T#.1            EDGE
 ---
 &nbsp;
 
+
+## Dedicated Line vs Internet VPN
+## Configure a Firewall (CSR1000v)
+1.
+
+
+
+
 # 🎯 REVIEW
 
 What are the jobs of a switch?
