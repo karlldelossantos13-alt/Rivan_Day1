@@ -463,9 +463,9 @@ __BUT__
 &nbsp;
 
 # ⭐ Fundamental Security Concepts
-1. C
-2. I
-3. A
+1. __C__
+2. __I__
+3. __A__
 
 ### 🔐 Confidentiality
 
@@ -528,7 +528,13 @@ Detect who is connected to you
 netstat -s -p tcp
 ~~~
 
-### Exercise 02: Why use VPN when you are WFH
+<br>
+<br>
+
+---
+&nbsp;
+
+### 🎯 Exercise 02: Why use VPN when you are WFH
 ~~~
 !@CoreTAAS
 conf t
@@ -557,49 +563,26 @@ __Access Wireshark__
 | 1:Username | admin                           |
 | 2:Password | pass                            |
 
+<br>
 
+__Implement Secure Protocols: SSH__
 
+| 🔑 | Public | Private | 🔑 |
+| --- | ---   | ---     | --- |
 
+<br>
 
-
-
-
-
-
-1. Confidentiality
-Telnet & SSH Traffic
-
-2. Integrity
-Hashfile
-
-3. Availability
-Avoid a single point of failure
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+~~~
+!@CoreTAAS
+conf t
+ ip domain name sec.com
+ crypto key generate rsa
+ 2048
+ ip ssh version 2
+ line vty 0 14
+  transport input all
+  end
+~~~
 
 <br>
 <br>
@@ -607,46 +590,15 @@ Avoid a single point of failure
 ---
 &nbsp;
 
-## 📠 Enterprise Communication
-*How often are meetings conducted in your work place?*
+### ✉️ Integrity
+~~~
+!@cmd
+certutil -hashfile SERVER_EVAL_x64FRE_en-us.iso md5
+~~~
 
 <br>
 
-Cisco Unified Call Manager | [Unified Communications and Collaboration.](https://www.cisco.com/c/en/us/products/unified-communications/index.html)
-  - POTS (__Analog__)
-  - VOIP (__ePhone__)
-
-<br>
-<br>
-
----
-&nbsp;
-
-## 🌐 Internet Connectivity
-*When to use UTP and Fibre Optic*
-
-<br>
-
-[IEEE Ethernet Standards](https://www.ccnaacademy.com/2018/09/ieee-ethernet-standards_16.html)
-
-  | Name            | Speed | IEEE  |
-  | ---             |  ---  |  ---  |
-  | Ethernet        |       |       |
-  | FastEthernet    |       |       |
-  | GigEthernet     |       |       |
-  | TenGigEthernet  |       |       |
-
-<br>
-
-  - RJ45 Jack
-  - SFP (Small Form-factor Pluggable)
-
-<br>
-
-  | Copper                                           | Single-mode fiber                    |
-  | ---                                              | ---                                  |
-  | Conductor, Bedding, Sheathing                    | Core, Cladding, Coating              |
-  | Affected by electrical and magnetic interference | Comprised of insulated glass strands |
+Search on Google: `SERVER_EVAL_x64FRE_en-us.iso md5 hash`
 
 <br>
 <br>
@@ -654,28 +606,56 @@ Cisco Unified Call Manager | [Unified Communications and Collaboration.](https:/
 ---
 &nbsp;
 
+### 🔀 Availability
+`Avoid a single point of failure`
 
+<br>
 
+Expensive Switches have __Loop Avoidance__
 
+<br>
 
+Execute a persistent ping
+~~~
+!@cmd
+ping 10.#$34T#.1.2 -t
+~~~
 
+<br>
 
+Combine Cables to achieve higher Bandwidth.
 
+<br>
 
+~~~
+!@CoreBABA & CoreTAAS
+conf t
+ int range fa0/10-12
+  channel-group 1 mode active
+  exit
+ int po1
+  switchport trunk encaps dot1q
+  switchport mode trunk
+  switchport trunk allowed vlan all
+  switchport trunk native vlan 1
+  end
+show int po1 | inc BW
+~~~
 
+<br>
+<br>
 
-
-
-
+---
+&nbsp;
 
 ### ⚙️ 3. DHCP / BOOTPS & BOOTPC
 *In a network, which device should be a DHCP Server? __It depends.__*
 
 | Network     | DHCP Device |
-| :---:       |     ---     |
+| ---         |     ---     |
 | SOHO        | Router      |
 |             |             |
-| Enterprise                |
+| Enterprise  |             |
 | Medium Biz  | Firewall    |
 | Large Biz   | Core Switch |
 
@@ -689,7 +669,7 @@ Cisco Unified Call Manager | [Unified Communications and Collaboration.](https:/
 <br>
 
 ~~~
-!@CoreBABA
+!@CoreTAAS
 conf t
  ip dhcp excluded-address 10.#$34T#.1.1 10.#$34T#.1.100
  ip dhcp excluded-address 10.#$34T#.10.1 10.#$34T#.10.100
@@ -705,7 +685,7 @@ conf t
   default-router 10.#$34T#.10.4
   domain-name WIFIDATA.COM
   dns-server 10.#$34T#.1.10
-  option 43 ip 10.#$34T#.10.#$34T#
+  option 43 ip 10.#$34T#.10.7
  ip dhcp pool POOLCCTV
   network 10.#$34T#.50.0 255.255.255.0
   default-router 10.#$34T#.50.4
@@ -717,27 +697,8 @@ conf t
   domain-name VOICEDATA.COM
   dns-server 10.#$34T#.1.10
   option 150 ip 10.#$34T#.100.8
-  lease 5 0 0
   end
 ~~~
-
-&nbsp;
----
-&nbsp;
-
-DHCP (Dynamic Host Configuration Protocol)
-[DHCP Options](https://www.iana.org/assignments/bootp-dhcp-parameters/bootp-dhcp-parameters.xhtml)
-                            
-| Option              |    Value    |
-| ---                 |    :---:    |
-| Address Subnet Mask |      1      |
-| Default Gateway     |      3      |
-| DNS Server          |      6      |
-| Domain Name         |     15      |
-| Domain Controller   |     43      |
-| Lease Time          |     51      |
-| Client Identifier   |     61      |
-| TFTP Server         |    150      |
 
 <br>
 <br>
@@ -786,7 +747,6 @@ conf t
   end
 ~~~
 
-
 &nbsp;
 ---
 &nbsp;
@@ -834,6 +794,34 @@ conf t
 ---
 &nbsp;
 
+## 📠 Enterprise Communication
+*How often are meetings conducted in your work place?*
+
+<br>
+
+Cisco Unified Call Manager | [Unified Communications and Collaboration.](https://www.cisco.com/c/en/us/products/unified-communications/index.html)
+  - POTS (__Analog__)
+  - VOIP (__ePhone__)
+
+&nbsp;
+---
+&nbsp;
+
+### Requirements to make IP Phones Operational
+7.
+6.
+5.
+4.
+3. IP Address       Did your phone get the correct IP?
+2. MAC Address
+1. Power (PoE)
+
+<br>
+<br>
+
+---
+&nbsp;
+
 ## ⚙️ 5. MAC Learning & MAC Reservation
 *What is in a MAC Address?*
 - OUI (Organizationally Unique Identifier)
@@ -841,21 +829,14 @@ conf t
 
 <br>
 
-Identify MAC Addresses across various vendors.
+How switches forward data? __Frame Forwarding__
 
 ~~~
-@cmd
-ipconfig /all
-~~~
+!@Windows
+arp /ah
 
-~~~
-@Linux
-ifconfig
-~~~
-
-~~~
-@CoreBABA
-show interface fa0/1
+!@Linux
+arp -a
 ~~~
 
 <br>
@@ -920,6 +901,75 @@ Review the jobs of a switch:
 
 ---
 &nbsp;
+
+
+
+
+
+
+
+
+
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+## 🌐 Internet Connectivity
+*When to use UTP and Fibre Optic*
+
+<br>
+
+[IEEE Ethernet Standards](https://www.ccnaacademy.com/2018/09/ieee-ethernet-standards_16.html)
+
+  | Name            | Speed | IEEE  |
+  | ---             |  ---  |  ---  |
+  | Ethernet        |       |       |
+  | FastEthernet    |       |       |
+  | GigEthernet     |       |       |
+  | TenGigEthernet  |       |       |
+
+<br>
+
+  - RJ45 Jack
+  - SFP (Small Form-factor Pluggable)
+
+<br>
+
+  | Copper                                           | Single-mode fiber                    |
+  | ---                                              | ---                                  |
+  | Conductor, Bedding, Sheathing                    | Core, Cladding, Coating              |
+  | Affected by electrical and magnetic interference | Comprised of insulated glass strands |
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Secure Layer 2 Network
 *Why should you buy an expensive switch?*
