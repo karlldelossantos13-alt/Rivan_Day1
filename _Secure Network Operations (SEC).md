@@ -1586,9 +1586,9 @@ Review the jobs of a call manager:
 &nbsp;
 
 ### Requirements to make IP Phones Operational
-7.
-6.
-5.
+7. A____
+6. G71__  G72__
+5. R__
 4. TFTP:  SCCP:  SIP:
 3. IP Address
 2. MAC Address
@@ -1805,6 +1805,14 @@ conf t
   destination-pattern 82..
   session target ipv4:10.82.100.8
   codec g711ULAW
+ dial-peer voice 91 Voip
+  destination-pattern 91..
+  session target ipv4:10.91.100.8
+  codec g711ULAW
+ dial-peer voice 92 Voip
+  destination-pattern 92..
+  session target ipv4:10.92.100.8
+  codec g711ULAW
  end
  
 !@IVRS
@@ -1856,21 +1864,11 @@ config t
 ---
 &nbsp;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### 💾 Save the configurations
+~~~
+!@CUCM
+copy run start
+~~~
 
 <br>
 <br>
@@ -1878,7 +1876,7 @@ config t
 ---
 &nbsp;
 
-## 🌐 Internet Connectivity
+## 🌐 Site Connectivity
 *When to use UTP and Fibre Optic*
 
 <br>
@@ -1909,12 +1907,6 @@ config t
 
 ---
 &nbsp;
-
-
-
-
-
-
 
 ## 🔧 Configure EDGE
 ### 🏨 Establish connectivity to your enterprise.
@@ -2008,31 +2000,6 @@ conf t
 &nbsp;
 
 ### ⚙️ Configure routing protocols
-What are the jobs of a router?
- 1. &nbsp;
- 2. &nbsp;
- 3. &nbsp;
- 4. &nbsp;
- 5. &nbsp;
-
-<br>
-<br>
-
-> __ITSM__  
-> Title: Job of an EDGE Router  
-> Description: Provide connection between branches through:  
-> 1. Routing via Static  
-> 2. Routing via OSPF  
-> 3. Routing via EIGRP  
-> 4. Routing via BGP  
-> 5. Routing via VPN  
->   
-> Justification: Establish connectivity.  
-
----
-&nbsp;
-
-### ⚙️ 1. Static Routing
 ~~~
 !@EDGE
 conf t
@@ -2056,6 +2023,7 @@ conf t
  ip route 10.91.0.0 255.255.0.0 200.0.0.81 254
  ip route 10.92.0.0 255.255.0.0 200.0.0.82 254
  ip route 10.#$34T#.0.0 255.255.0.0 10.#$34T#.#$34T#.4 253
+ no ip route 10.#$34T#.0.0 255.255.0.0 200.0.0.#$34T# 254
  end
 ~~~
 
@@ -2169,22 +2137,6 @@ ping 10.#$34T#.1.4                 CoreBABA
 ping 10.#$34T#.100.8               CUCM
 ping 10.#$34T#.#$34T#.1            EDGE
 ~~~
-
-<br>
-
-Scan
-
-~~~
-!@cmd
-nmap -v 10.#$34T#.1.2 
-nmap -v 10.#$34T#.1.4
-nmap -v 10.#$34T#.100.8
-nmap -v 10.#$34T#.#$34T#.1
-~~~
-
-<br>
-
-Telnet via SecureCRT
 
 <br>
 <br>
