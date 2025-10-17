@@ -317,6 +317,12 @@ conf t
   password pass
   login
   exec-timeout 0 0
+ vlan 10
+  name WIFIVLAN
+ vlan 50
+  name CCTVVLAN
+ vlan 100
+  name VOICEVLAN
  int vlan 1
   no shut
   ip add 10.#$34T#.1.2 255.255.255.0
@@ -775,12 +781,10 @@ conf t
   switchport mode access
   switchport voice vlan 100
   switchport access vlan 1
-  mls qos trust device cisco-phone
  int fa 0/7
   switchport mode access
   switchport voice vlan 100
   switchport access vlan 1
-  mls qos trust device cisco-phone
  end
 ~~~
 
@@ -902,15 +906,37 @@ Review the jobs of a switch:
 ---
 &nbsp;
 
+### 🔴 RED Team
+Hack your LAN to better protect it.
+1. Run __\_D3PentestVM__
+2. Login to the VM
+> Username: kali  
+> Password: kali  
 
+3. Run yersinia
 
+~~~
+@Kali
+sudo yersinia -G
+~~~
 
+<br>
 
+4. Perform various Attacks.
 
+Verify:
+~~~
+!@CoreBABA
+show process cpu | inc uti
+~~~
 
+<br>
 
-
-
+> __ITSM__  
+> Title: Protect the most important switch in your office
+> Description: - RootBridge = CoreTAAS : Primary
+>              - 2ndRootBridge = CoreBABA : Secondary
+> Justification: To protect the network from layer 2 attacks.
 
 <br>
 <br>
@@ -918,60 +944,7 @@ Review the jobs of a switch:
 ---
 &nbsp;
 
-
-## 🌐 Internet Connectivity
-*When to use UTP and Fibre Optic*
-
-<br>
-
-[IEEE Ethernet Standards](https://www.ccnaacademy.com/2018/09/ieee-ethernet-standards_16.html)
-
-  | Name            | Speed | IEEE  |
-  | ---             |  ---  |  ---  |
-  | Ethernet        |       |       |
-  | FastEthernet    |       |       |
-  | GigEthernet     |       |       |
-  | TenGigEthernet  |       |       |
-
-<br>
-
-  - RJ45 Jack
-  - SFP (Small Form-factor Pluggable)
-
-<br>
-
-  | Copper                                           | Single-mode fiber                    |
-  | ---                                              | ---                                  |
-  | Conductor, Bedding, Sheathing                    | Core, Cladding, Coating              |
-  | Affected by electrical and magnetic interference | Comprised of insulated glass strands |
-
-<br>
-<br>
-
----
-&nbsp;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Secure Layer 2 Network
+## 🔒 Secure Layer 2 Network
 *Why should you buy an expensive switch?*
 
 1. MAC Address Learning
@@ -1035,117 +1008,68 @@ show int status err-disable
 &nbsp;
 
 ### Spanning Tree
+*What switches hate the most?*
+
+~~~
+!@cmd
+ping 10.#$34T#.1.100 -t
+~~~
+
+<br>
+
 How to spot a healthy switch.
  - Lights are green - Super Healthy
  - Lights are amber - You are protected
 
 <br>
 
-How to get fired immediately.
+__How to get fired immediately.__
 ~~~
 !@CoreTAAS & CoreBABA
 config t
  no spanning-tree vlan 1-999
  end
-ping 10.#$34T#.255.255
 ~~~
 
 <br>
 
-Save your network.
+Save your network
 ~~~
 config t
  spanning-tree vlan 1-999
  end
 ~~~
 
-<br>
-
-Spanning-Tree Protocol - __802.1D__
-| BLK | LIS | LRN | FWD |        |
-| --- | --- | --- | --- | ---    |
-|     | 15s |     | 15s | = 30s  |
-
-<br>
-
-~~~
-@Wireshark
-Bridge priority: 32768
-~~~
-
 &nbsp;
 ---
 &nbsp;
 
-### RED Team
-Hack your LAN to better protect it.
-1. Run __\_D3PentestVM__
-2. Login to the VM
-> Username: kali  
-> Password: kali  
+!@Wireshark
+32768   vs   28672   vs   24576
 
-3. Run yersinia
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 ~~~
-@Kali
-sudo yersinia -G
+!@CoreTAAS
+conf t
+ spanning-tree vlan 1-1000 root primary
+ end
 ~~~
 
 <br>
 
-4. Perform various Attacks.
-
-Verify:
 ~~~
 !@CoreBABA
-show process cpu | inc uti
-~~~
-
-<br>
-
-> __ITSM__  
-> Title: Protect the most important switch in your office
-> Description: - RootBridge = CoreTAAS : Primary
->              - 2ndRootBridge = CoreBABA : Secondary
-> Justification: To protect the network from layer 2 attacks.
-
-<br>
-<br>
-
-~~~
-!@CoreTAAS       32786 --> 24576
-config t
- spanning-tree mode pvst
- spanning-tree vlan 1-100 root Primary
- end
-sh spanning-tree vlan 1
-~~~
-
-~~~
-!@CoreBABA       32768->   28672
-config t              
- spanning-tree mode pvst
- spanning-tree vlan 1-100 root Secondary
- end
-sh spanning-tree vlan 1
-~~~
-
-&nbsp;
----
-&nbsp;
-
-### ⚖️ Ensure Availability through redundancy and loadbalance
-~~~
-!@coreBaba, coreTaas
 conf t
- int range fa0/10-12
-  switchport trunk encapsulation dot1q
-  switchport mode trunk
-  channel-group 1 mode active
-  channel-protocol lacp
-  end
-show etherchannel summary
-show interface po1 | inc BW
+ spanning-tree vlan 1-1000 root secondary
+ end
 ~~~
 
 <br>
@@ -1196,39 +1120,6 @@ conf t
   desc VLANMGMTVOICE
  end
 
-!@dhcp
-conf t
- ip dhcp excluded-add 10.#$34T#.1.1 10.#$34T#.1.100
- ip dhcp excluded-add 10.#$34T#.10.1 10.#$34T#.10.100
- ip dhcp excluded-add 10.#$34T#.50.1 10.#$34T#.50.100
- ip dhcp excluded-add 10.#$34T#.100.1 10.#$34T#.100.100
- ip dhcp pool POOLDATA
-  network 10.#$34T#.1.0 255.255.255.0
-  default-router 10.#$34T#.1.4
-  domain-name MGMTDATA.COM
-  dns-server 10.#$34T#.1.10
-  exit
- ip dhcp pool POOLWIFI
-  network 10.#$34T#.10.0 255.255.255.0
-  default-router 10.#$34T#.10.4
-  domain-name WIFIDATA.COM
-  dns-server 10.#$34T#.1.10
-  option 43 ip 10.#$34T#.10.#$34T#
-  exit
- ip dhcp pool POOLCCTV
-  network 10.#$34T#.50.0 255.255.255.0
-  default-router 10.#$34T#.50.4
-  domain-name CCTVDATA.COM
-  dns-server 10.#$34T#.1.10
-  exit
- ip dhcp pool POOLVOICE
-  network 10.#$34T#.100.0 255.255.255.0
-  default-router 10.#$34T#.100.4
-  domain-name VOICEDATA.COM
-  dns-server 10.#$34T#.1.10
-  option 150 ip 10.#$34T#.100.8
-  exit
-
 !@switchport
 conf t
  vlan 1
@@ -1258,12 +1149,10 @@ conf t
   switchport mode access
   switchport voice vlan 100
   switchport access vlan 1
-  mls qos trust device cisco-phone
  int fa 0/7
   switchport mode access
   switchport voice vlan 100
   switchport access vlan 1
-  mls qos trust device cisco-phone
  end
 
 !@camera
@@ -1286,34 +1175,69 @@ conf t
 ---
 &nbsp;
 
-### ☁️ Remote Access
-Access the CoreSwitches without the console cable.
-~~~
-@cmd
-ping 10.#$34T#.1.2
-ping 10.#$34T#.1.4
-~~~
 
-&nbsp;
----
-&nbsp;
 
-When a device is pingable you can scan it.
-~~~
-@cmd
-nmap -v 10.#$34T#.1.2
-nmap -v 10.#$34T#.1.4
-~~~
 
-Is port 23 open?
 
-Enter port 23 via __SecureCRT__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <br>
 <br>
 
 ---
 &nbsp;
+
+## 🌐 Internet Connectivity
+*When to use UTP and Fibre Optic*
+
+<br>
+
+[IEEE Ethernet Standards](https://www.ccnaacademy.com/2018/09/ieee-ethernet-standards_16.html)
+
+  | Name            | Speed | IEEE  |
+  | ---             |  ---  |  ---  |
+  | Ethernet        |       |       |
+  | FastEthernet    |       |       |
+  | GigEthernet     |       |       |
+  | TenGigEthernet  |       |       |
+
+<br>
+
+  - RJ45 Jack
+  - SFP (Small Form-factor Pluggable)
+
+<br>
+
+  | Copper                                           | Single-mode fiber                    |
+  | ---                                              | ---                                  |
+  | Conductor, Bedding, Sheathing                    | Core, Cladding, Coating              |
+  | Affected by electrical and magnetic interference | Comprised of insulated glass strands |
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+
+
 
 
 ## 🔧 Configure CUCM
