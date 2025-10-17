@@ -476,7 +476,7 @@ __BUT__
 ### 🔐 Confidentiality
 
 __5 Phases of Ethical Hacking__
-1. Reconnaissance - gather information.
+### 1. Reconnaissance - gather information.
 
 cia.gov    vs    neu.edu.ph   vs   sti.edu.ph   vs   dpwh.gov.ph
 
@@ -498,7 +498,7 @@ nmap -O 10.28.0.0/24
 
 <br>
 
-2. Scanning - find open ports, active devices, and services. Find Vulnerabilities
+### 2. Scanning - find open ports, active devices, and services. Find Vulnerabilities
 ~~~
 !@cmd
 nmap -v 10.#$34T#.1.2
@@ -511,7 +511,7 @@ Is port __445/Microsoft-DS & 139/ServerMessageBlock__ open?
 
 <br>
 
-3. Gaining Access - Utilize weaknesses and establish connectivity
+### 3. Gaining Access - Utilize weaknesses and establish connectivity
 *How to access port 445 because you don't have a Firewall!*
 ~~~
 !@cmd
@@ -522,12 +522,12 @@ net use x: \\10.28.0.x\c$
 
 <br>
 
-4. Maintain Access - Install backdoors, rootkits, or Trojan for continued access.
+### 4. Maintain Access - Install backdoors, rootkits, or Trojan for continued access.
 ex. Keylogger
 
 <br>
 
-5. Clear Tracks - remain under the radar. Wipe logs, conceal files, manipulate timestamps.
+### 5. Clear Tracks - remain under the radar. Wipe logs, conceal files, manipulate timestamps.
 Detect who is connected to you
 ~~~
 !@cmd
