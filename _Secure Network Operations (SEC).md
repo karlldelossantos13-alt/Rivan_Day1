@@ -2153,6 +2153,10 @@ ping 10.#$34T#.#$34T#.1            EDGE
 
 
 ## Dedicated Line vs Internet VPN
+
+<br>
+<br>
+
 ## Configure a Firewall (CSR1000v)
 1. Data Filtering
 2. Rate Limiting
