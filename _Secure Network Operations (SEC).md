@@ -1031,6 +1031,7 @@ __How to get fired immediately.__
 ~~~
 !@CoreTAAS & CoreBABA
 config t
+ default int range fa0/10-12
  no spanning-tree vlan 1-999
  end
 ~~~
