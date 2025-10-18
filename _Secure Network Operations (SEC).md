@@ -1909,13 +1909,6 @@ copy run start
 &nbsp;
 
 ## 🔧 Configure EDGE
-Jobs of a router:
-1. Site Connectivity
-2. Routing Policies
-3. Proxy
-4. Remote Access
-5. QoS
-
 ### 🏨 Establish connectivity to your enterprise.
 *How do you gain access to the internet?*
 
@@ -2152,48 +2145,23 @@ ping 10.#$34T#.#$34T#.1            EDGE
 &nbsp;
 
 
-## Dedicated Line vs Internet VPN
+### Dedicated Line vs Internet VPN
 
 <br>
 <br>
 
-## Configure a Firewall (CSR1000v)
-1. Data Filtering
-2. Rate Limiting
-3. Proxy
-4. Access Control Policies
-
+## 🧱 Setup a Firewall (CSR1000v)
+   
 <br>
 
 __Ordinary Firewall vs NGFW__
 
-# 🎯 REVIEW
+<br>
+<br>
 
-What are the jobs of a switch?
- 1. &nbsp;
- 2. &nbsp;
- 3. &nbsp;
- 4. &nbsp;
- 5. &nbsp;
+### `fbi.gov`   vs   `neu.edu.ph`   vs   `dpwh.gov.ph`
+- Threat Defense
+- Intrusion Detection
+- Open Ports: HTTP, HTTPS, SSH, DNS
 
-&nbsp;
----
-&nbsp;
 
-What are the jobs of a call manager/voice gateway?
- 1. &nbsp;
- 2. &nbsp;
- 3. &nbsp;
- 4. &nbsp;
- 5. &nbsp;
-
-&nbsp;
----
-&nbsp;
- 
-What are the jobs of a router?
- 1. &nbsp;
- 2. &nbsp;
- 3. &nbsp;
- 4. &nbsp;
- 5. &nbsp;
