@@ -2154,10 +2154,14 @@ ping 10.#$34T#.#$34T#.1            EDGE
 
 ## Dedicated Line vs Internet VPN
 ## Configure a Firewall (CSR1000v)
-1.
+1. Data Filtering
+2. Rate Limiting
+3. Proxy
+4. Access Control Policies
 
+<br>
 
-
+__Ordinary Firewall vs NGFW__
 
 # 🎯 REVIEW
 
