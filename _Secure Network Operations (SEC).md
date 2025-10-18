@@ -482,7 +482,7 @@ __BUT__
 ### 5 Phases of Ethical Hacking
 __1. Reconnaissance - gather information.__
 
-cia.gov    vs    neu.edu.ph   vs   sti.edu.ph   vs   dpwh.gov.ph
+### `cia.gov`    vs    `neu.edu.ph`   vs   `sti.edu.ph`   vs   `dpwh.gov.ph`
 
 <br>
 
@@ -617,7 +617,7 @@ Search on Google: `SERVER_EVAL_x64FRE_en-us.iso md5 hash`
 &nbsp;
 
 ### 🔀 Availability
-`Avoid a single point of failure`
+*Avoid a single point of failure*
 
 <br>
 
