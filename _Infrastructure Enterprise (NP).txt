@@ -1,72 +1,138 @@
 
-<!-- Your Monitor Number == #$34T# -->
+<!-- Your monitor number = #$34T# -->
 
-# CCNP Day1
 
-On Premise vs Cloud
-"Configure Day1 devices alongside RSTHayup"
+# 👋 Welcome to Rivan
+*"There's no better teacher than experience"*
+
+
+&nbsp;
+## 💡 Approach to Network Programmability
+*"A new era for Cisco Certifications"*
+
+Cisco Certified Network Automation
+
+- Powershell, Bash
+- Python, Ruby, TCL
+- JSON, YAML
+- REST APIs
+- Ansible, Terraform, Chef, Puppet, etc.
+- Collaboration Platforms (GitHub)
+
+<br>
+<br>
 
 ---
+&nbsp;
 
-Layer 1 - Establish physical connectivity.
-Network Design - Topology
-- Bus
-- Star
+## 📋 Prove what you are doing.
+ - Create a Github account: https://github.com/
+ - Create a Postman account: https://www.postman.com/
 
-Cabling
-- UTP
-- Fiber Optic
+Import the repositories.
+ - Rivan_Day1 : https://github.com/art-stacks/Rivan_Day1
 
-PoE Standards
-Provisioning
+<br>
+<br>
 
+---
+&nbsp;
 
-Layer 2 - Switches
+## 📂 Create your own folder in the desktop
+~~~
+@cmd
+cd Desktop
+mkdir _name-#$34T#
+cd _name-#$34T#
+dir
+~~~
 
-CoreTAAS & CoreBABA
-RSTHayup - P1, P2, D1, D2, A1, A2, R4
+<br>
+<br>
 
-Frame Forwarding
-Structure of an Ethernet Frame
+# 💻 Build your network. 
 
-| Layer  | Preamble | SFD | MAC Destination | MAC Source | 802.1Q TAG | Ethertype | Payload | FCS | IGP |
-| ---    | ---      | --- | ---             | ---        | ---        | ---       | ---     | --- | --- |
-| Length | 7        | 1   | 6               | 6          | 4          | 2         | 42-1500 | 4   | 12  |
+![Day1](img/Day1_100.png)
 
-L2 Technologies
-1. VLANs
-   - VTP
+<br>
+<br>
 
-2. SVI
-   - L3 Connectivity
+---
+&nbsp;
 
-3. LoadBalance
-   - Etherchannel
-   - Stackwise
-   - VSS
+## 🧱 Hierarchical Network Design
+  *What is the most important part of a network? __The Core__*
 
-4. DHCP
-   MAC Learning & Reservation
-   - IP Reservation
-   - ARP
+<br>
 
-####
-Vulnerabilities (_D3Pentest)
-- Port Security 
-- DHCP Snooping
-- Dynamic Arp Inspection
+Most common kinds of network architectures.
+ - 2-tier                 __Cisco Collapsed Campus Core__
+ - 3-tier                 __Enterprise Network Design__
+ - Spine-leaf             __Data Center Fabric__
 
-Loop Avoidance
-- STP
-- STP Features
+<br>
 
+CORE Layer (__CoreTAAS__ & __CoreBABA__) - High Speed and Availability
+  > [!NOTE]
+  >*"A Network Engineer MUST avoid a single point of failure.
+   __Always have a backup.__"*
 
+<br>
 
+Examples:
+  | __Protocol__                 | __Supported Devices__    |
+  | ---                          | ---                      |
+  | Etherchannel                 | Cisco Catalyst..and more |
+  | FlexStack (Master Switch)    | Cisco 2960 & 6500 Series |
+  | VSS (Single logical switch)  | NXOS 9k                  |
+  | SSO (Stateful Switchover)
+  | NSF (Non-stop Forwarding)
 
+<br>
+<br>
 
+---
+&nbsp;
 
-CONFIGURATION - CoreBABA & CoreTAAS
+## 🔌 Wired and wireless network.
+*How many devices do you have right now that can connect to the internet?*
 
+<br>
+
+> [!NOTE]
+> A network must be Flexible. Reliable. __AVAILABLE__.
+
+<br>
+
+### 📶 PLDT AP vs Wireless Controller & Autonomous AP
+
+<br>
+
+Wifi Mesh
+ - Wired Backhaul
+ - Wireless Backhaul
+
+<br>
+
+Wifi standards | [IEEE (Institute of Electrical and Electronics Engineers)](https://standards.ieee.org/beyond-standards/the-evolution-of-wi-fi-technology-and-standards/)
+
+  - WiFi 6     IEEE 802.11ax
+  - WiFi 7     IEEE P802.11be
+
+<br>
+<br>
+
+---
+&nbsp;
+
+## In-house vs MSP
+On-Prem Devices vs RSTHayup Labs (3-tier Enterprise)
+
+![3Tier](img/3Tier.png)
+
+<br>
+
+~~~
 !@CoreTAAS
 conf t
  hostname CoreTAAS-#$34T#
@@ -86,7 +152,11 @@ conf t
   ip add 10.#$34T#.1.2 255.255.255.0
   no shut
   end
+~~~
 
+<br> 
+
+~~~
 !@CoreBABA
 conf t
  hostname CoreBABA-#$34T#
@@ -106,148 +176,783 @@ conf t
   ip add 10.#$34T#.1.4 255.255.255.0
   no shut
   end
-  
----
+~~~
 
+### DISCOVERY PROTOCOL
+
+
+### Exercise 01: [3-Tier] Identify port connections between switches
+
+!@Switches
+show cdp neighbor
+
+<br>
+<br>
+<br>
+<br>
+
+&nbsp;
+---
+&nbsp;
+
+### ANSWER
+<details>
+<summary>Show Answer</summary>
+
+img/3Tier
+
+</details>
+
+
+
+### [3-Tier] SECURITY Best Practice 
+Task 1.
+- Disable CDP on Access Switches
+- Enable LLDP on Access Switches but only transmit LLDP traffic to D1 & D2
+
+Task 2.
+- Disable CDP on Distribution Switches towards access switches
+- Enable LLDP on D1 & D2, but only allow recieving traffic from A1,A2,A3
+
+
+Solution
+
+Task 1.
+- Disable CDP on Access Switches
+
+!@A1,A2,A3,A4
+conf t
+ no cdp run
+ end
+ 
+- Enable LLDP on Access Switches but only transmit LLDP traffic to D1 & D2
+
+!@A1,A2,A3
+conf t
+ lldp run
+ int range e1/1-2,e2/1-2
+  lldp transmit
+  no lldp receive
+  end
+
+<br>
+
+Task 2.
+- Disable CDP on Distribution Switches towards access switches
+
+!@D1,D2
+conf t
+ int range e1/1-2,e2/1-2,e3/1-2
+  no cdp enable
+  end
+
+- Enable LLDP on D1 & D2, but only allow receiving traffic from A1,A2,A3
+
+!@D1,D2
+conf t
+ lldp run
+ int range e1/1-2,e2/1-2,e3/1-2
+  no lldp transmit
+  lldp receive
+  end
+
+&nbsp;
+---
+&nbsp;
+
+### Remote Access
+
+~~~
 !@cmd
 ping 10.#$34T#.1.2
 ping 10.#$34T#.1.4
 
 nmap -v 10.#$34T#.1.2
 nmap -v 10.#$34T#.1.4
+~~~
 
 Telnet
 - 10.#$34T#.1.2
 - 10.#$34T#.1.4
 
+&nbsp;
 ---
+&nbsp;
 
+### Frame Forwarding
+*What is the source MAC address of the Telnet session when it is received by CoreTAAS?*
+
+Structure of an Ethernet Frame
+
+| Layer  | Preamble | SFD | MAC Destination | MAC Source | 802.1Q TAG | Ethertype | Payload | FCS | IGP |
+| ---    | ---      | --- | ---             | ---        | ---        | ---       | ---     | --- | --- |
+| Length | 7        | 1   | 6               | 6          | 4          | 2         | 42-1500 | 4   | 12  |
+
+<br>
+
+### Error Handling
+1. Giants - Ethernet Frame received is larger than the maximum allowed size. Misconfigured MTU
+2. Runts - Ethernet Frame received is smaller than the maximum allowed size. Collisions in half-duplex
+3. CRC - Checksum did not match. Faulty cable or media.
+4. FCS Error - Integrity check fail.
+4. Collisions - Transmit on the same medium simultaneously
+5. Late Collisions
+6. Overruns - Input buffer overflow
+
+
+__L2 Technologies__
+1. ARP
+
+2. VLANs
+   - VTP
+
+3. SVI
+   - L3 Connectivity
+
+4. LoadBalance
+   - Etherchannel
+   - Stackwise
+   - VSS
+
+5. DHCP
+   MAC Learning & Reservation
+   - IP Reservation
+ 
+ 
+&nbsp; 
+---
+&nbsp;
+
+
+### L2 Vulnerabilities (_D3Pentest)
+*Why you should properly protect the switch*
+- VLAN Hopping attack
+- VTP Attack
+- Rogue DHCP Server
+- CDP Flooding
+
+<br>
+
+How to get fired!
+
+~~~
+!@CoreTAAS & CoreBABA
+conf t
+ no spanning-tree vlan 1-999
+ end
+~~~
+
+Save your network
+~~~
+!@CoreTAAS & CoreBABA
+conf t
+ spanning-tree vlan 1-999
+ end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+## Master the five superheroes of switching
+## QPID (802.1Q)
+
+Access vs Trunk
+
+~~~
+!@CoreTAAS & CoreBABA
+conf t
+ default int fa0/10-12
+ int fa0/10-12
+  switchport trunk encapsulation dot1q
+  switchport mode trunk
+  switchport trunk allowed vlan 1-100
+  switchport trunk native vlan 1
+  no shut
+  end
+show int trunk
+~~~
+
+<br>
+<br>
+
+---
+&nbsp;
+
+### Exercise 03: [3-Tier] Trunk the links between switches
+Task 1.
+- Configure the Open standard protocol for trunking on the links between Access & Distribution Switches.
+- Configure trunk links between Distribution & Core Switches using the IEEE Standard frame tagging method.
+- Make sure VLAN 1 is untagged on all switches.
+- Allow all VLANs
+
+<br>
+<br>
+<br>
+<br>
+
+~~~
+!@C1,C2
+conf t
+ int range e0/1-3,e1/1-2,e2/1-2
+  switchport trunk encapsulation dot1q
+  switchport mode trunk
+  switchport trunk allowed vlan all
+  switchport trunk native vlan 1
+  no shut
+  end
+show int trunk
+~~~
+
+<br>
+
+~~~
+!@D1,D2
+conf t
+ int range e1/0-3,e2/0-3,e3/1-2
+  switchport trunk encapsulation dot1q
+  switchport mode trunk
+  switchport trunk allowed vlan all
+  switchport trunk native vlan 1
+  no shut
+  end
+show int trunk
+~~~
+
+<br>
+
+~~~
+!@A1,A2,A3
+conf t
+ int range e1/1-2,e2/1-2
+  switchport trunk encapsulation dot1q
+  switchport mode trunk
+  switchport trunk allowed vlan all
+  switchport trunk native vlan 1
+  no shut
+  end 
+show int trunk
+~~~
+
+<br>
+<br>
+
+---
+&nbsp;
+
+## DARNA (802.1D)
+
+32768  vs  24576  vs  28672
+
+Properly configure the switch
+
+~~~
+!@CoreTAAS & C1
+conf t
+ spanning-tree mode pvst
+ spanning-tree vlan 1-999 root primary
+ end
+~~~
+
+<br>
+
+~~~
+!@CoreBABA & C2
+conf t
+ spanning-tree mode pvst
+ spanning-tree vlan 1-999 root secondary
+ end
+~~~
+
+
+Determine Port Roles
+- Designated
+- Root
+- Alternate
+- Back
+
+
+How to determine Port Cost
+1. Short Path Cost Method (IEEE 802.1D)
+| Link Speed | Default Cost |
+| 10 Mbps    | 100          |
+| 100 Mbps   | 19           |
+| 1 Gbps     | 4            |
+| 10 Gbps    | 2            |
+
+2. Long Path Cost Method (IEEE 802.1t / 802.1D-2004)
+| Link Speed | Default Cost |
+| 10 Mbps    | 2_000_000    |
+| 100 Mbps   | 200_000      |
+| 1 Gbps     | 20_000       |
+| 10 Gbps    | 2_000        |
+| 100 Gbps   | 200          |
+| 1 Tbps     | 20           |
+
+<br>
+
+Port Cost = Reference Bandwidth / Link Speed
+
+Default Ref BW = 20_000_000_000 bps (20Gbps)
+
+&nbsp;
+---
+&nbsp;
+
+
+### Exercise 03: [3-Tier] Identify port roles.
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+
+### [3-Tier] Modify Path costs
+Task 1.
+- Configure all switches to use the Long Path Cost Method.
+- Modify the Reference Bandwidth to 20 Pbs
+- Lower the cost of D1's e1/3 interface so it becomes the root port.
+
+Solution
+
+Task 1.
+- Configure all switches to use the Long Path Cost Method.
+
+~~~
+!@C1,C2,D1,D2,A1,A2,A3,A4
+conf t
+ spanning-tree pathcost method long
+ end
+show spanning-tree pathcost method
+~~~
+
+
+- Modify the Reference Bandwidth to 20 Pbs
+
+~~~
+!@C1,C2,D1,D2,A1,A2,A3,A4
+conf t
+ !spanning-tree reference-bandwidth cost 20000000000000000
+ end
+~~~
+
+
+- Lower the cost of D1's e1/3 interface to 10 so it becomes the root port.
+
+~~~
+!@D1
+conf t
+ int e1/3
+  spanning-tree cost 10
+  end
+~~~
+
+<br>
+
+Who is DARNA (802.1D)
+BLK - LIS - LRN -FWD
+      15s   15s     = 30s
+
+<br>
+
+Blocking (BLK) - Listens for BPDUs, does not forward data
+Listening (LIS) - Listens for BPDUs, starts topology change timer
+Learning (LRN) - Builds MAC address table but does not forward traffic
+Forwarding (FWD) - Forwards user traffic and BPDUs
+
+&nbsp;
+---
+&nbsp;
+
+
+## ⚡ WONDERWOMAN (802.1W)
+
+~~~
+!@CoreTAAS & CoreBABA, !@C1,C2,D1,D2,A1,A2,A3,A4
+conf t
+ spanning-tree mode rapid-pvst
+ end
+show spanning-tree vlan 1
+~~~
+
+Discarding, Learning, Forwarding
+
+
+STP Features
+1. Portfast - Skips all STP negotiation and go straight to forwarding.
+   - EDGE Port - Non-Switch link
+   - NETWORK Port - Switch to Switch link
+2. BPDU Guard - Shuts down a port that receives a BPDU.
+3. LOOP Guard - When BPDUs is no longer recieved on Designated ports, keep the port blocked. | Blocking
+4. Root Guard - Stops a port from accepting superior BPDUs. | Blocking
+5. BPDUFilter - Will not send BPDUs until received.
+6. UplinkFast - Recover quickly from uplink failure.
+7. BackboneFast - Old ver of Uplinkfast
+
+<br>
+
+__Best Practice__
+
+Access Layer                        | spanning-tree portfast, spanning-tree bpduguard enable |
+Distribution Layer (toward Access)  | spanning-tree guard root
+Core/Trunk Links (between switches) | spanning-tree guard loop
+
+~~~
+!@CoreBABA
+conf t
+ spanning-tree portfast bpdufilter default
+ int range fa0/1-8
+  spanning-tree portfast edge
+  spanning-tree bpduguard enable
+ int range fa0/10-12
+  spanning-tree portfast network
+  spanning-tree uplinkfast    !unnecessary for rstp (has built-in convergence)
+  spanning-tree guard loop
+  end
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### Exercise 04: [3-Tier] Determine STP Features
+Where should the following STP features should be applied on the network to optimize STP traffic.
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+Solution
+
+!@A1,A2,A3
+conf t
+ int range e0/1-2
+  spanning-tree portfast edge
+  spanning-tree bpduguard enable
+  spanning-tree bpdufilter enable
+ int range e1/1-2,e2/1-2
+  spanning-tree guard loop
+  spanning-tree portfast network
+  spanning-tree uplinkfast
+  end
+~~~
+
+<br>
+
+~~~
+!@D1,D2
+conf t
+ int range e1/0-3,e2/0-3,e3/1-2
+  spanning-tree portfast network
+  spanning-tree guard loop
+ int range e1/0,e1/3,e2/0,e2/3
+  spanning-tree uplinkfast
+  end
+~~~
+
+<br>
+
+~~~
+!@D2
+conf t
+ int e0/0
+  spanning-tree portfast edge
+  spanning-tree bpduguard enable
+  spanning-tree bpdufilter enable
+  end
+~~~
+
+<br>
+
+~~~
+!@C1,C2
+conf t
+ int range e0/1-3,e1/1-2,e2/1-2
+  spanning-tree portfast network
+  spanning-tree guard loop
+  end
+~~~
+
+<br>
+
+~~~
+!@C2
+conf t
+ int range e0/1-3
+  spanning-tree uplinkfast
+  end
+~~~
+
+&nbsp;
+---
+&nbsp;
+
+
+### [3-Tier] NIST SP 800-41r1 network security guidance recommends to enable PortFast & BPDU Guard Globally.
+
+~~~
+!@Switches
+spanning-tree portfast default
+spanning-tree portfast bpduguard default
+spanning-tree portfast bpdufilter default
+~~~
+
+<br>
+
+Who is WONDERWOMAN (802.1W)
+DIS - LRN - FWD
+
+<br>
+
+Discarding (DIS) - Not forwarding user frames; discards traffic. Listens for BPDUs
+Learning (LRN) - Builds MAC address table but does not forward user traffic
+Forwarding (FWD) - Forwards user traffic and BPDUs
+
+<br>
+<br>
+
+---
+&nbsp;
+
+## SUPERMAN (802.1S)
+Step 1: Configure VTP
+~~~
+!@CoreTAAS,C1,C2
+conf t
+ vtp domain ccnp
+ vtp password pass
+ vtp mode server
+ vtp version 2
+ end
+~~~
+
+<br>
+
+~~~
+!@CoreBABA,D1,D2,A1,A2,A3,A4
+conf t
+ vtp domain ccnp
+ vtp password pass
+ vtp mode server
+ vtp version 2
+ end
+~~~
+
+Step 2: Configure VLANs
+
+~~~
+!@CoreTAAS,C1,C2
+conf t
+ vlan 1-40
+  exit
+ vlan 41-70
+  exit
+ vlan 71-100
+ end
+~~~
+
+
+> [!IMPORTANT]
+> Configuring VTP will result in Access ports to return to VLAN 1
+
+~~~
+!@CoreBABA
+conf t
+ int range fa0/2,fa0/4
+  switchport mode access
+  switchport access vlan 10
+ int range fa0/6,fa0/8
+  switchport mode access
+  switchport access vlan 50
+ int fa0/3
+  switchport mode access
+  switchport access vlan 100
+ int range fa0/5,fa0/7
+  switchport voice vlan 100
+  end
+~~~
+
+<br>
+
+Step 3: Enable 802.1S
+
+~~~
+!@CoreTAAS,CoreBABA,C1,C2,D1,D2,A1,A2,A3
+conf t
+ spanning-tree mode mst
+ spanning-tree mst configuration
+  name superman-stp
+  revision 1
+   instance 1 vlan 1-40
+   instance 2 vlan 41-70
+   instance 3 vlan 71-100
+   end
+show spanning-tree mst configuration
+~~~
+
+
+Reconfigure Port Priority
+
+~~~
+!@CoreTAAS,C1
+config t
+ spanning-tree mst 0 root primary
+ spanning-tree mst 1 root secondary
+ spanning-tree mst 2 root primary
+ spanning-tree mst 3 root secondary
+end
+~~~
+
+<br>
+
+~~~
+!@CoreBABA,C2
+config t
+ spanning-tree mst 0 root Secondary
+ spanning-tree mst 1 root primary
+ spanning-tree mst 2 root Secondary
+ spanning-tree mst 3 root primary
+end
+~~~
+
+Who is SUPERMAN (802.1S)
+Multiple VLANs sharing a spanning tree instance, 
+compared to PVST & RST where each VLANs is its own STP instance.
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### X-MEN (802.1X)
+Configure SSH (Optional, but recommended)
+!@C1,C2
+conf t
+ username admin privilege 15 secret pass
+ username rivan privilege 15 secret pass
+ ip domain-name ccnp.com
+ crypto key generate rsa modulus 2048 label ccnpkey
+ ip ssh rsa keypair-name ccnpkey
+ ip ssh version 2
+ line vty 0 4
+  transport input ssh,telnet
+  end
+
+!@C1,C2
+conf t
+ username admin privilege 15 secret pass
+ username rivan privilege 15 secret pass
+ ip domain-name ccnp.com
+ crypto key generate rsa modulus 2048 label ccnpkey
+ ip ssh rsa keypair-name ccnpkey
+ ip ssh version 2
+ line vty 0 14
+  transport input ssh,telnet
+  end
+  
+!@C1,C2
+conf t
+ aaa new-model
+ aaa authentication login default local
+ aaa authorization exec default local
+ aaa authentication enable default enable
+ line vty 0 4
+  transport input all
+  login authentication default
+  end
+
+<br>
+<br>
+
+---
+&nbsp;
+
+## Port Aggregation
+LACP vs PAGP
+
+| Mode             | On  | Active/Desirable | Passive/Auto |
+| ---              | --- | ---              | ---          |
+| On               | [x] | [ ]              | [ ]          | 
+| Active/Desirable | [ ] | [x]              | [x]          |
+| Passive/Auto     | [ ] | [x]              | [ ]          |
+
+~~~
 !@CoreTAAS
 conf t
  int range fa0/10-12
   channel-group 1 mode active
   port-channel load-balance src-mac
   end
+show int po1 | inc BW
+~~~
 
+<br>
+
+~~~
 !@CoreBABA
 conf t
  int range fa0/10-12
   channel-group 1 mode passive
   port-channel load-balance src-mac
   end
+show int po1 | inc BW
+~~~
 
-What does port-channel load-balance do?
-src-mac
-src-dst-ip
-extended
+How does Port-Channel load balance
+- src-mac
+- src-dst-ip
+- extended
 
-!@CoreTAAS & CoreBABA
-conf t
- int po1
-  lacp max-bundle 8
-  lacp min-links 3
-  end
-
-Ethernet Frame LACP contents
+<br>
+<br>
 
 ---
+&nbsp;
 
-Trunk Links (802.1q)
-!@CoreTAAS & CoreBABA
-conf t
- int po1
-  switchport trunk encaps dot1q
-  switchport mode trunk
-  switchport trunk allowed vlan all
-  switchport trunk native vlan 1
-  switchport trunk prune vlan 69
-  end
+### Exercise 05: [3-Tier] Configure Etherchannel links
+Note:
+- Configure Etherchannel on the links between switches.
+- Configure the Port-Channel Number base on the diagram.
 
-Ethernet Frame 802.1q Tag contents
+Task1:
+- C1 & C2 must use the open standard protocol for link aggregation. 
+- C1 & C2 must both participate in forming link aggregation on all linked ports.
 
-###################
-RSTHAYUP
+Task2:
+- D1 & D2 must use the open standard protocol for link aggregation. 
+- D1 & D2 must not participate but will form link aggregation on all linked ports.
 
----
-
-VLAN Trunking Protocol
-!@CoreTAAS & CoreBABA
-conf t
- vtp domain ccnp
- vtp version 2
- vtp password C1sc0123
- end
-
-!@CoreBABA
- vtp mode client
- end
-
-!@CoreTAAS
-conf t
- vtp mode server
- !
- vlan 10
-  name WIFIVLAN
-  exit
- vlan 50
-  name CCTVVLAN
-  exit
- vlan 100
-  name VOICEVLAN
-  end
-
-!@CoreTAAS & CoreBABA
-show flash:
-
-Where are VLAN informnation stored? 
-vlan.dat
+Task3:
+- A1, A2, and A3 must use the open standard protocol for link aggregation. 
+- A1, A2, and A3 must participate in forming link aggregation on all linked ports.
 
 
-###################
-RSTHAYUP
+
+<br>
+<br>
 
 ---
+&nbsp;
 
-Frame Forwarding Process
+### IP ADDRESSING
+## Switch Virtual Interface (SVI)
 
-!@Cisco
-show arp
-
-!@Windows & Linux
-arp -a
-
-
-On D3Pentest, attempt CDP Flooding attack or VTP attack.
-Prevent Vulnerabilities by configuring STP
-
-Spanning Tree Protocol
-PVST+ (802.1D)
-
-STP Values:
-32768	24576  28672
-
-!@CoreTAAS
-conf t
- spanning-tree vlan 1-100 root primary
- end
-
-!@CoreBABA
-conf t
- spanning-tree vlan 1-100 root secondary
- end
-
-
-BLK - LIS - LRN - FWD
-      15s   15s       = 30s
-
-
-###################
-RSTHAYUP
-
----
-
-Switch Virtual Interface
-
+~~~
 !@CoreTAAS
 conf t
  int vlan 10
@@ -265,7 +970,11 @@ conf t
   ip add 10.#$34T#.100.2 255.255.255.0
   no shut
   end
+~~~
 
+<br>
+
+~~~
 !@CoreBABA
 conf t
  int vlan 10
@@ -283,19 +992,65 @@ conf t
   ip add 10.#$34T#.100.4 255.255.255.0
   no shut
   end
+~~~
 
---- 
 
-Layer 3 - IP Forwarding
+IP address vs VLANs
 
-Wireshark - Capture DHCP data
 
-DHCP & Network Traffic Types
-- Discover - Broadcast
-- Offer - Unicast
-- Request - Broadcast
-- Acknowledge - Unicast
+Assign IP Addresses on PCs based on their specified VLAN.
+- Make sure PCs can communicate with C1 & C2 (Gateway)
 
+!@P1
+conf t
+ int e0/0
+  no shut
+  ip add 10.1.10.101 255.255.255.224
+  end
+
+!@P2
+conf t
+ int e0/0
+  no shut
+  ip add 192.168.30.113 255.255.255.248
+  end
+
+!@P3
+conf t
+ int e0/0
+  no shut
+  ip add 10.1.20.60 255.255.255.240
+  end
+
+!@P4
+conf t
+ int e0/0
+  ip add 10.1.10.102 255.255.255.224
+  no shut
+  end
+
+
+<br>
+
+Assign RSTVM to VLAN the Management VLAN
+!@A3
+conf t
+ int e3/3
+  no shut
+  switchport mode access
+  switchport access vlan 1
+  end
+  
+  
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### DHCP
+~~~
 !@CoreTAAS
 conf t
  ip dhcp excluded-address 10.#$34T#.1.1 10.#$34T#.1.100
@@ -325,7 +1080,7 @@ conf t
   dns-server 10.#$34T#.1.10
   option 150 ip 10.#$34T#.100.8
   end
-
+~~~
 
 DHCP Options
 - Option 1
@@ -333,22 +1088,79 @@ DHCP Options
 - Option 3
 
 
-IP Reservation
+<br>
+<br>
 
-!@CoreTAAS
+---
+&nbsp;
+
+### Exercise 06: [3-Tier] Configure DHCP Pool for SALES
+Task 1.
+- Use the IP address 192.168.50.0/24
+- Reserve the First 100 IPs
+- Apply the First Valid IP on C1, last Valid on C2
+- Load balance between C1 & C2 
+  - C1 - 1   - 100 IPs
+  - C2 - 200 - 253 IPs
+- Set the Domain name to SALES.COM
+- The default Gateway must be C1 or C2 per pool
+
+Task 2.
+- Configure P5 as a dhcp client
+  
+
+!@C1
 conf t
- ip routing
- ip dhcp pool CAMERA6
-  host 10.#$34T#.50.6 255.255.255.0
-  client-identifier #camera6macadd#
- ip dhcp pool CAMERA8
-  host 10.#$34T#.50.8 255.255.255.0
-  client-identifier #camera8macadd#
- end
+ int vlan 50
+  no shut
+  ip add 192.168.50.1 255.255.255.0
+  exit
+ ip dhcp excluded-address 192.168.50.1 192.168.50.100
+ ip dhcp pool SALES.COM
+  network 192.168.50.0 255.255.255.0
+  default-router 192.168.50.1
+  domain-name SALES.COM
+  end
 
---- 
+!@C2
+conf t
+ int vlan 50
+  no shut
+  ip add 192.168.50.254 255.255.255.0
+  exit
+ ip dhcp excluded-address 192.168.50.1 192.168.50.200
+ ip dhcp pool SALES.COM
+  network 192.168.50.0 255.255.255.0
+  default-router 192.168.50.254
+  domain-name SALES.COM
+  end
 
-Did devices get IP from the correct VLAN?
+
+!@P5
+conf t
+ int e0/0
+  no shut
+  ip add dhcp
+  end
+
+
+DHCP States:
+1.
+2.
+3.
+4.
+
+What type of data traffic is each state? (Unicast, Broadcast, Multicast)
+Base on Wireshark.
+
+<br>
+<br>
+
+---
+&nbsp;
+
+### VLAN Management
+*Did devices get IP from the correct VLAN?*
 
 !@CoreBABA
 conf t
@@ -372,20 +1184,68 @@ conf t
   mls qos trust cos
   end
  
-Quality of Service
-- Markings
-- Queue
-- Tags
+ 
+## MAC Learning
+### IP Reservation
 
-!@CoreBABA
+!@CoreTAAS
 conf t
- auto qos global compact
+ ip routing
+ ip dhcp pool CAMERA6
+  host 10.#$34T#.50.6 255.255.255.0
+  client-identifier #camera6macadd#
+ ip dhcp pool CAMERA8
+  host 10.#$34T#.50.8 255.255.255.0
+  client-identifier #camera8macadd#
  end
-show auto qos
+ 
+
+### Exercise 07: [3-Tier] Reserve IP address
+Task 1.
+- Assign S1 to the ServerFarm VLAN
+- Configure S1 with a Client-ID on its e0/0 interface as its MAC Address
+
+Task 2.
+- Configure a DHCP pool on C2 to reserve IP 10.1.100.200/25 for S1
+- Have the DHCP pool name to be S1Farm
+- Set the default gateway as C2
+- Set S1 as a DHCP Client
+
+!@D2
+conf t
+ int e0/0
+  switchport mode access
+  switchport access vlan 100
+  no shut
+  end
+
+!@S1
+show int e0/0
+conf t
+ int e0/0
+  no shut
+  ip dhcp client client-id hex #M4C4DDR3SS#
+  ip add dhcp
+  end
+
+!@C2
+conf t
+ int vlan 100
+  no shut
+ ip dhcp pool S1Farm
+  host 10.1.100.200 255.255.255.128
+  default-router 10.1.100.130
+  client-identifier aabbcc00d500
+  end
+ 
+
+<br>
+<br>
 
 ---
+&nbsp;
 
-Port Security
+### Port Security
 
 !@CoreBABA
 conf t
@@ -403,10 +1263,54 @@ conf t
   switchport port-security maximum 1
   switchport port-security violation shutdown
   end
+sh port-security address
+sh int status err-disable
+ 
+
+Make Ports Alive again
+!@CoreBABA
+config t
+ Int fa0/6
+  no switchport port-security
+  shut
+  no shut
+ Int fa0/8
+  no switchport port-security
+  shut
+  no shut
+  end
+ 
+
+### [3-Tier] Set Port-Security for S1
+
+!@D2
+conf t
+ e0/0
+  switchport mode access
+  switchport port-security
+  switchport port-security mac-address sticky
+  switchport port-security maximum 1
+  switchport port-security violation shutdown
+  end
+
+!@S1
+conf t
+ int e0/0
+  mac-address 0011.1111.1111
+  end
+
+!@D2
+show port-security address 
+show int status err-disable
+ 
+ 
+<br>
+<br>
 
 ---
+&nbsp;
 
-Dynamic ARP Inspection & DHCP Snooping
+### Dynamic ARP Inspection & DHCP Snooping
 
 !@CoreBABA
 conf t
@@ -432,7 +1336,9 @@ conf t
  ip arp inspection validate src-mac dst-mac ip
  end
 
----
+
+
+
 
 Managing Enterprise Communication
 
@@ -509,6 +1415,41 @@ conf t
 !
 csim start #$34T#00
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Quality of Service
+- Markings
+- Queue
+- Tags
+
+!@CoreBABA
+conf t
+ auto qos global compact
+ end
+show auto qos
+
 
 Telephony
 
@@ -1096,3 +2037,20 @@ conf t
   end
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
