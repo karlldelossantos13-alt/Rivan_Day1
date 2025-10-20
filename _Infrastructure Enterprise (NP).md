@@ -459,8 +459,7 @@ show int trunk
 &nbsp;
 
 ## DARNA (802.1D)
-
-32768  vs  24576  vs  28672
+### `32768  vs  24576  vs  28672`
 
 Properly configure the switch
 
@@ -499,6 +498,7 @@ Lowest Bridge ID (Priority + MAC Address)
 
 __How to determine Port Cost__
 1. Short Path Cost Method (IEEE 802.1D)
+
 | Link Speed | Default Cost |
 | ---        | ---          |
 | 10 Mbps    | 100          |
@@ -509,8 +509,9 @@ __How to determine Port Cost__
 <br>
 
 2. Long Path Cost Method (IEEE 802.1t / 802.1D-2004)
+
 | Link Speed | Default Cost |
-| ---        | --- 
+| ---        | ---          |
 | 10 Mbps    | 2_000_000    |
 | 100 Mbps   | 200_000      |
 | 1 Gbps     | 20_000       |
@@ -602,12 +603,13 @@ Who is __DARNA__ (__802.1D__)
 3. Learning (LRN) - Builds MAC address table but does not forward traffic
 4. Forwarding (FWD) - Forwards user traffic and BPDUs
 
-&nbsp;
+<br>
+<br>
+
 ---
 &nbsp;
 
 ## ⚡ WONDERWOMAN (802.1W)
-
 ~~~
 !@CoreTAAS & CoreBABA, !@C1,C2,D1,D2,A1,A2,A3,A4
 conf t
@@ -618,6 +620,7 @@ show spanning-tree vlan 1
 
 Discarding, Learning, Forwarding
 
+<br>
 
 STP Features
 1. Portfast - Skips all STP negotiation and go straight to forwarding.
@@ -634,24 +637,41 @@ STP Features
 
 __Best Practice__
 
+<br>
+
 Access Layer                        | spanning-tree portfast, spanning-tree bpduguard enable |
 Distribution Layer (toward Access)  | spanning-tree guard root
 Core/Trunk Links (between switches) | spanning-tree guard loop
 
+<br>
+
 ~~~
-!@CoreBABA
+!@CoreTAAS
 conf t
+ spanning-tree backbonefast    !unnecessary for rstp (has built-in convergence)
  spanning-tree portfast bpdufilter default
+ spanning-tree portfast bpduguard default
  int range fa0/1-8
-  spanning-tree portfast edge
-  spanning-tree bpduguard enable
- int range fa0/10-12
-  spanning-tree portfast network
-  spanning-tree uplinkfast    !unnecessary for rstp (has built-in convergence)
-  spanning-tree guard loop
+  spanning-tree portfast  !edge
+ !int range fa0/10-12
+  !spanning-tree portfast !network
   end
 ~~~
 
+<br>
+
+~~~
+!@CoreBABA
+conf t
+ spanning-tree uplinkfast    !unnecessary for rstp (has built-in convergence)
+ spanning-tree portfast bpdufilter default
+ spanning-tree portfast bpduguard default
+ int range fa0/1-8
+  spanning-tree portfast
+ !int range fa0/10-12
+  !spanning-tree portfast !network
+  end
+~~~
 
 <br>
 <br>
@@ -659,8 +679,7 @@ conf t
 ---
 &nbsp;
 
-
-### Exercise 04: [3-Tier] Determine STP Features
+### 🎯 Exercise 04: [3-Tier] Determine STP Features
 Where should the following STP features should be applied on the network to optimize STP traffic.
 <br>
 <br>
@@ -669,9 +688,15 @@ Where should the following STP features should be applied on the network to opti
 <br>
 <br>
 
+&nbsp;
+---
+&nbsp;
 
-Solution
-
+### ANSWER
+<details>
+<summary>Show Answer</summary>
+	
+~~~
 !@A1,A2,A3
 conf t
  int range e0/1-2
@@ -731,13 +756,13 @@ conf t
   end
 ~~~
 
+</details>
+
 &nbsp;
 ---
 &nbsp;
 
-
 ### [3-Tier] NIST SP 800-41r1 network security guidance recommends to enable PortFast & BPDU Guard Globally.
-
 ~~~
 !@Switches
 spanning-tree portfast default
@@ -747,14 +772,16 @@ spanning-tree portfast bpdufilter default
 
 <br>
 
-Who is WONDERWOMAN (802.1W)
-DIS - LRN - FWD
+Who is __WONDERWOMAN__ (__802.1W__)
+| DIS | LRN | FWD |
+| --- | --- | --- |
+|     |     |     |
 
 <br>
 
-Discarding (DIS) - Not forwarding user frames; discards traffic. Listens for BPDUs
-Learning (LRN) - Builds MAC address table but does not forward user traffic
-Forwarding (FWD) - Forwards user traffic and BPDUs
+1. Discarding (DIS) - Not forwarding user frames; discards traffic. Listens for BPDUs
+2. Learning (LRN) - Builds MAC address table but does not forward user traffic
+3. Forwarding (FWD) - Forwards user traffic and BPDUs
 
 <br>
 <br>
