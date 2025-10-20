@@ -368,6 +368,9 @@ conf t
 &nbsp;
 
 # Master the five superheroes of switching
+
+<br>
+
 ## QPID (802.1Q)
 
 <br>
@@ -394,7 +397,7 @@ show int trunk
 ---
 &nbsp;
 
-### Exercise 03: [3-Tier] Trunk the links between switches
+### 🎯 Exercise 02: [3-Tier] Trunk the links between switches
 Task 1.
 - Configure the Open standard protocol for trunking on the links between Access & Distribution Switches.
 - Configure trunk links between Distribution & Core Switches using the IEEE Standard frame tagging method.
@@ -479,24 +482,35 @@ conf t
  end
 ~~~
 
+<br>
 
-Determine Port Roles
+__Determine Port Roles__
 - Designated
 - Root
 - Alternate
 - Back
 
+<br>
 
-How to determine Port Cost
+__Who is the Root?__
+Lowest Bridge ID (Priority + MAC Address)
+
+<br>
+
+__How to determine Port Cost__
 1. Short Path Cost Method (IEEE 802.1D)
 | Link Speed | Default Cost |
+| ---        | ---          |
 | 10 Mbps    | 100          |
 | 100 Mbps   | 19           |
 | 1 Gbps     | 4            |
 | 10 Gbps    | 2            |
 
+<br>
+
 2. Long Path Cost Method (IEEE 802.1t / 802.1D-2004)
 | Link Speed | Default Cost |
+| ---        | --- 
 | 10 Mbps    | 2_000_000    |
 | 100 Mbps   | 200_000      |
 | 1 Gbps     | 20_000       |
@@ -506,24 +520,33 @@ How to determine Port Cost
 
 <br>
 
-Port Cost = Reference Bandwidth / Link Speed
+~~~
+!@CoreBABA
+show spanning-tree pathcost method
+~~~
 
-Default Ref BW = 20_000_000_000 bps (20Gbps)
+<br>
+
+__Port Cost__ = Reference Bandwidth / Link Speed
+__Default Ref BW__ = 20_000_000_000 bps
+
+<br>
+<br>
+
+---
+&nbsp;
+
+### 🎯 Exercise 03: [3-Tier] Identify port roles.
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 &nbsp;
 ---
 &nbsp;
-
-
-### Exercise 03: [3-Tier] Identify port roles.
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-
 
 ### [3-Tier] Modify Path costs
 Task 1.
@@ -531,11 +554,11 @@ Task 1.
 - Modify the Reference Bandwidth to 20 Pbs
 - Lower the cost of D1's e1/3 interface so it becomes the root port.
 
-Solution
+<br>
 
+__Solution__
 Task 1.
 - Configure all switches to use the Long Path Cost Method.
-
 ~~~
 !@C1,C2,D1,D2,A1,A2,A3,A4
 conf t
@@ -544,9 +567,9 @@ conf t
 show spanning-tree pathcost method
 ~~~
 
+<br>
 
 - Modify the Reference Bandwidth to 20 Pbs
-
 ~~~
 !@C1,C2,D1,D2,A1,A2,A3,A4
 conf t
@@ -554,9 +577,9 @@ conf t
  end
 ~~~
 
+<br>
 
 - Lower the cost of D1's e1/3 interface to 10 so it becomes the root port.
-
 ~~~
 !@D1
 conf t
@@ -567,21 +590,21 @@ conf t
 
 <br>
 
-Who is DARNA (802.1D)
-BLK - LIS - LRN -FWD
-      15s   15s     = 30s
+Who is __DARNA__ (__802.1D__)
+| BLK | LIS | LRN | FWD   |
+| --- | --- | --- | ---   |
+|     | 15s | 15s | = 30s |
 
 <br>
 
-Blocking (BLK) - Listens for BPDUs, does not forward data
-Listening (LIS) - Listens for BPDUs, starts topology change timer
-Learning (LRN) - Builds MAC address table but does not forward traffic
-Forwarding (FWD) - Forwards user traffic and BPDUs
+1. Blocking (BLK) - Listens for BPDUs, does not forward data
+2. Listening (LIS) - Listens for BPDUs, starts topology change timer
+3. Learning (LRN) - Builds MAC address table but does not forward traffic
+4. Forwarding (FWD) - Forwards user traffic and BPDUs
 
 &nbsp;
 ---
 &nbsp;
-
 
 ## ⚡ WONDERWOMAN (802.1W)
 
