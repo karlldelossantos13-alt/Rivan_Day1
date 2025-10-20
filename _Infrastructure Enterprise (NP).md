@@ -1,7 +1,6 @@
 
 <!-- Your monitor number = #$34T# -->
 
-
 # 👋 Welcome to Rivan
 *"There's no better teacher than experience"*
 
@@ -178,13 +177,18 @@ conf t
   end
 ~~~
 
-### DISCOVERY PROTOCOL
+<br>
+<br>
 
+---
+&nbsp;
 
-### Exercise 01: [3-Tier] Identify port connections between switches
-
+## DISCOVERY PROTOCOL
+### 🎯 Exercise 01: [3-Tier] Identify port connections between switches.
+~~~
 !@Switches
 show cdp neighbor
+~~~
 
 <br>
 <br>
@@ -199,11 +203,15 @@ show cdp neighbor
 <details>
 <summary>Show Answer</summary>
 
-img/3Tier
+No Cheating pls...
 
 </details>
 
+<br>
+<br>
 
+---
+&nbsp;
 
 ### [3-Tier] SECURITY Best Practice 
 Task 1.
@@ -214,19 +222,23 @@ Task 2.
 - Disable CDP on Distribution Switches towards access switches
 - Enable LLDP on D1 & D2, but only allow recieving traffic from A1,A2,A3
 
+<br>
+<br>
 
-Solution
-
+__SOLUTION__  
 Task 1.
 - Disable CDP on Access Switches
-
+~~~
 !@A1,A2,A3,A4
 conf t
  no cdp run
  end
- 
-- Enable LLDP on Access Switches but only transmit LLDP traffic to D1 & D2
+~~~
 
+<br>
+
+- Enable LLDP on Access Switches but only transmit LLDP traffic to D1 & D2
+~~~
 !@A1,A2,A3
 conf t
  lldp run
@@ -234,20 +246,22 @@ conf t
   lldp transmit
   no lldp receive
   end
+~~~
 
 <br>
 
 Task 2.
 - Disable CDP on Distribution Switches towards access switches
-
+~~~
 !@D1,D2
 conf t
  int range e1/1-2,e2/1-2,e3/1-2
   no cdp enable
   end
+~~~
 
 - Enable LLDP on D1 & D2, but only allow receiving traffic from A1,A2,A3
-
+~~~
 !@D1,D2
 conf t
  lldp run
@@ -255,6 +269,7 @@ conf t
   no lldp transmit
   lldp receive
   end
+~~~
 
 &nbsp;
 ---
@@ -291,38 +306,55 @@ Structure of an Ethernet Frame
 <br>
 
 ### Error Handling
-1. Giants - Ethernet Frame received is larger than the maximum allowed size. Misconfigured MTU
-2. Runts - Ethernet Frame received is smaller than the maximum allowed size. Collisions in half-duplex
-3. CRC - Checksum did not match. Faulty cable or media.
-4. FCS Error - Integrity check fail.
-4. Collisions - Transmit on the same medium simultaneously
-5. Late Collisions
-6. Overruns - Input buffer overflow
+1. __Giants__ - Ethernet Frame received is larger than the maximum allowed size. Misconfigured MTU
+2. __Runts__ - Ethernet Frame received is smaller than the maximum allowed size. Collisions in half-duplex
+3. __CRC__ - Checksum did not match. Faulty cable or media.
+4. __FCS Error__ - Integrity check fail.
+4. __Collisions__ - Transmit on the same medium simultaneously
+5. __Late Collisions__
+6. __Overruns__ - Input buffer overflow
 
+<br>
 
 __L2 Technologies__
 1. ARP
-
 2. VLANs
    - VTP
-
 3. SVI
    - L3 Connectivity
-
 4. LoadBalance
    - Etherchannel
    - Stackwise
    - VSS
-
 5. DHCP
    MAC Learning & Reservation
    - IP Reservation
- 
  
 &nbsp; 
 ---
 &nbsp;
 
+__How to get fired!__
+~~~
+!@CoreTAAS & CoreBABA
+conf t
+ no spanning-tree vlan 1-999
+ end
+~~~
+
+<br>
+
+__Save your network__
+~~~
+!@CoreTAAS & CoreBABA
+conf t
+ spanning-tree vlan 1-999
+ end
+~~~
+
+&nbsp; 
+---
+&nbsp;
 
 ### L2 Vulnerabilities (_D3Pentest)
 *Why you should properly protect the switch*
@@ -331,44 +363,25 @@ __L2 Technologies__
 - Rogue DHCP Server
 - CDP Flooding
 
-<br>
-
-How to get fired!
-
-~~~
-!@CoreTAAS & CoreBABA
-conf t
- no spanning-tree vlan 1-999
- end
-~~~
-
-Save your network
-~~~
-!@CoreTAAS & CoreBABA
-conf t
- spanning-tree vlan 1-999
- end
-~~~
-
-
 &nbsp;
 ---
 &nbsp;
 
-
-## Master the five superheroes of switching
+# Master the five superheroes of switching
 ## QPID (802.1Q)
 
-Access vs Trunk
+<br>
+
+__Access vs Trunk Links__
 
 ~~~
 !@CoreTAAS & CoreBABA
 conf t
  default int fa0/10-12
- int fa0/10-12
+ int range fa0/10-12
   switchport trunk encapsulation dot1q
   switchport mode trunk
-  switchport trunk allowed vlan 1-100
+  switchport trunk allowed vlan all
   switchport trunk native vlan 1
   no shut
   end
